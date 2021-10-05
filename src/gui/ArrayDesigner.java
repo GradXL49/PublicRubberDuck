@@ -202,7 +202,6 @@ public class ArrayDesigner extends JDialog {
 				success[0] = initializeData(data);
 				if(success[0]) dispose();
 				else JOptionPane.showMessageDialog(null, "Something went wrong.\nMost likely an entry was not properly entered. Make sure to press enter after modifying a cell to ensure the change is recorded.");
-				dispose();
 			}
 		});
 	}

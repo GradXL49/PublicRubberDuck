@@ -335,7 +335,6 @@ public class GraphDesigner extends JDialog {
 			if(cbDataType.getSelectedItem().toString() != "None") {
 				if(cbDataType.getSelectedItem().toString() == "String") {
 					for(int i=0; i<tmContent.getRowCount(); i++) {
-						System.out.println(tmContent.getValueAt(i, 1).toString());
 						data[0][i+1] = tmContent.getValueAt(i, 1).toString();
 					}
 				}
@@ -353,7 +352,11 @@ public class GraphDesigner extends JDialog {
 			
 			for(int i=1; i<size; i++) {
 				for(int j=1; j<size; j++) {
-					data[i][j] = Double.parseDouble(tmConnect.getValueAt(i-1, j).toString());
+					try {
+						data[i][j] = Integer.parseInt(tmConnect.getValueAt(i-1, j).toString());
+					} catch(Exception e) {
+						data[i][j] = 0;
+					}
 				}
 			}
 			

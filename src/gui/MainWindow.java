@@ -39,6 +39,7 @@ public class MainWindow {
 	private JTextArea taInput;
 	private JMenuItem mntmExit;
 	private JScrollPane spConvo;
+	private JMenuItem mntmRestart;
 
 	/**
 	 * Launch the application.
@@ -129,6 +130,9 @@ public class MainWindow {
 		mntmExit = new JMenuItem("Exit");
 		
 		mnFile.add(mntmExit);
+		
+		mntmRestart = new JMenuItem("Restart");
+		mnFile.add(mntmRestart);
 	}
 	
 	private void initializeActions() {
@@ -140,11 +144,29 @@ public class MainWindow {
 			}
 		});
 		
+		//restart
+		mntmRestart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				lmMessages.clear();
+				sendMessage("restart");
+				taInput.setText("");
+			}
+		});
+		
 		//submit button clicked or enter pressed
 		btnSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				lmMessages.addElement("You: "+taInput.getText());
-				sendMessage(taInput.getText());
+				String message = taInput.getText();
+				if(message.toLowerCase().contains("restart")) {
+					mntmRestart.doClick();
+					return;
+				}
+				else if(message.toLowerCase().contains("exit")) {
+					mntmExit.doClick();
+				}
+				
+				lmMessages.addElement("You: "+message);
+				sendMessage(message);
 				taInput.setText("");
 				
 				JScrollBar sb = spConvo.getVerticalScrollBar();
