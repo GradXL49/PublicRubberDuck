@@ -6,8 +6,11 @@
 
 package backend;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 public class SearchAlgorithms {
 	/*
@@ -113,7 +116,6 @@ public class SearchAlgorithms {
 		while(queue.size() != 0) {
 			s = queue.poll();
 			path += "node"+ (s+1) + " ";
-			System.out.println(path);
 			if(data[s] == target) 
 				return path;
 			
@@ -134,16 +136,17 @@ public class SearchAlgorithms {
 	 * Depth-First Search
 	 * modified from https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/
 	 */
-	public static void DFS(int v, Graph g, boolean[] visited, Object[] data, Object target, boolean[] success) {
+	public static void DFS(int v, Graph g, boolean[] visited, Object[] data, Object target, boolean[] success, ArrayList<Object> path) {
 		visited[v] = true;
+		path.add("node"+(v+1));
+		if(data[v] == target) success[0] = true;
 		
 		Iterator<Integer> i = g.adj[v].listIterator();
 		while(i.hasNext()) {
 			int n = i.next();
-			if(data[v] == target) success[0] = true;
 			
 			if(!visited[n])
-				DFS(n, g, visited, data, target, success);
+				DFS(n, g, visited, data, target, success, path);
 		}
 	}
 	
@@ -199,5 +202,76 @@ public class SearchAlgorithms {
 		}
 		
 		return printSolution(dist, V);
+	}
+	
+	/*
+	 * A* Search
+	 * modified from https://stackabuse.com/graphs-in-java-a-star-algorithm/
+	 */
+	public static String aStar(Node start, Node target){
+	    PriorityQueue<Node> closedList = new PriorityQueue<>();
+	    PriorityQueue<Node> openList = new PriorityQueue<>();
+
+	    start.f = start.g + start.calculateHeuristic(target);
+	    openList.add(start);
+
+	    while(!openList.isEmpty()){
+	        Node n = openList.peek();
+	        if(n == target){
+	            return printPath(n);
+	        }
+
+	        for(Node.Edge edge : n.neighbors){
+	            Node m = edge.node;
+	            double totalWeight = n.g + edge.weight;
+
+	            if(!openList.contains(m) && !closedList.contains(m)){
+	                m.parent = n;
+	                m.g = totalWeight;
+	                m.f = m.g + m.calculateHeuristic(target);
+	                openList.add(m);
+	            } else {
+	                if(totalWeight < m.g){
+	                    m.parent = n;
+	                    m.g = totalWeight;
+	                    m.f = m.g + m.calculateHeuristic(target);
+
+	                    if(closedList.contains(m)){
+	                        closedList.remove(m);
+	                        openList.add(m);
+	                    }
+	                }
+	            }
+	        }
+
+	        openList.remove(n);
+	        closedList.add(n);
+	    }
+	    return printPath(null);
+	}
+
+	//utility for A* search
+	public static String printPath(Node target){
+	    Node n = target;
+	    String out = "";
+
+	    if(n==null)
+	        return "A path was not found";
+
+	    ArrayList<String> ids = new ArrayList<>();
+
+	    while(n.parent != null){
+	        ids.add(n.id);
+	        n = n.parent;
+	    }
+	    ids.add(n.id);
+	    Collections.reverse(ids);
+
+	    for(String id : ids){
+	        out += id + " ";
+	    }
+	    out += "\n";
+	    
+	    return out;
 	}
 }

@@ -49,6 +49,10 @@ public class MessageService {
 		else if(response.contentEquals("Okay, let's make a weighted graph!")) {
 			makeGraph(true);
 		}
+
+		else if(response.contentEquals("Okay, let's sort it!")) {
+			sort();
+		}
 	}
 	
 	public String processMessage(String message) {
@@ -78,17 +82,27 @@ public class MessageService {
 			else if(message.contains("yes") || message.contains("weighted")) response = "Okay, let's make a weighted graph!";
 			else response = "I'm sorry, I don't understand. Enter 'yes' to make a weighted graph, or 'no' to make an unweighted graph.";
 		}
-		else if(question.contains("Would you like to search, or sort your")) {
+		else if(question.contentEquals("Would you like to search, or sort your array?")) {
 			if(message.contains("search")) response = "Okay, let's do a search! Without entering unnecesarry text, what are you looking for?";
 			else if(message.contains("sort")) response = "Okay, let's sort it!";
-			else if(question.contains("graph") && message.contains("path")) response = "Okay, let's find the shortest path. Which is the source node?";
 			else response = "I'm sorry, I don't understand. Enter 'search' to perform a search, or 'sort' to sort it.";
+		}
+		else if(question.contentEquals("Would you like to search, or find a path on your graph?")) {
+			if(message.contains("search")) response = "Okay, let's do a search! Without entering unnecesarry text, what are you looking for?";
+			else if(message.contains("path")) response = "Do you want all shortest paths or one specific path?";
 		}
 		else if(question.contentEquals("Okay, let's do a search! Without entering unnecesarry text, what are you looking for?")) {
 			search(message);
 		}
-		else if(question.contains("Okay, let's find the shortest path.")) {
+		else if(question.contentEquals("Do you want all shortest paths or one specific path?")) {
+			if(message.contains("all") || message.contains("shortest")) response = "Okay, let's find all shortest paths. Which is the source node?";
+			else if(message.contains("one") || message.contains("specific")) response = "Okay, let's find the path. Which is the destination node?";
+		}
+		else if(question.contains("Okay, let's find all shortest paths.")) {
 			shortestPath(message);
+		}
+		else if(question.contains("Okay, let's find the path.")) {
+			astar(message);
 		}
 		else {
 			System.out.println("MessageService: ERROR. Could not find last question asked. Last said: "+question);
@@ -134,7 +148,7 @@ public class MessageService {
 				for(int i=0; i<output.length; i++) {
 					this.messages.add(output[i]);
 				}
-				this.messages.add("Would you like to search, or sort your graph?");
+				this.messages.add("Would you like to search, or find a path on your graph?");
 			}
 			else {
 				this.messages.add("Hmmm... Looks like you need more time to decide.");
@@ -180,6 +194,7 @@ public class MessageService {
 		else { //if it is a graph
 			//String path = "";
 			boolean[] success = {false};
+			ArrayList<Object> path = new ArrayList<Object>();
 			Graph g = new Graph(data.length);
 			
 			if(data[0][0] == null) {
@@ -196,37 +211,102 @@ public class MessageService {
 				for(int i=0; i<data.length; i++) {
 					for(int j=0; j<data[0].length; j++) {
 						if(i == 0) d[j] = j;
-						else if((Double)data[i][j] != 0) {
+						else if((Integer)data[i][j] != 0) {
 							g.addEdge(i-1, j);
 						}
 					}
 				}
 				 
-				SearchAlgorithms.DFS(0, g, new boolean[g.getSize()], d, target, success);
+				//path = SearchAlgorithms.BFS(0, g, d, target);
+				SearchAlgorithms.DFS(0, g, new boolean[g.getSize()], d, target, success, path);
 				input = "Node " + input;
 			}
 			
 			/*if(path.contentEquals("")) this.messages.add(input + " was not found in the graph.");
 			else this.messages.add(input + " was found on the path: " + path);*/
-			if(success[0]) this.messages.add(input + " was found in the graph.");
+			if(success[0]) {
+				this.messages.add(input + " was found in the graph.");
+				this.messages.add("Path traveled: " + MyUtilities.printArr(path));
+			}
 			else this.messages.add(input + " was not found in the graph.");
 		}
 	}
 	
 	private void shortestPath(String input) {
-		int src = Integer.parseInt(input)-1;
-		
-		int V = data[0].length;
-		int[][] graph = new int[V][V];
-		for(int i=1; i<data.length; i++) {
-			for(int j=0; j<V; j++) {
-				graph[i-1][j] = (Integer)data[i][j];
+		try {
+			int src = Integer.parseInt(input)-1;
+			
+			int V = data[0].length;
+			int[][] graph = new int[V][V];
+			for(int i=1; i<data.length; i++) {
+				for(int j=0; j<V; j++) {
+					graph[i-1][j] = (Integer)data[i][j];
+				}
+			}
+			
+			String[] output = SearchAlgorithms.dijkstra(graph, src, V).split("\n", 0);
+			for(int i=0; i<output.length; i++) {
+				this.messages.add(output[i]);
 			}
 		}
+		catch(Exception e) {
+			e.printStackTrace();
+			this.messages.add("An error occurred.");
+		}
 		
-		String[] output = SearchAlgorithms.dijkstra(graph, src, V).split("\n", 0);
-		for(int i=0; i<output.length; i++) {
-			this.messages.add(output[i]);
+	}
+	
+	private void astar(String input) {
+		try {
+			int target = Integer.parseInt(input)-1;
+			
+			ArrayList<Node> graph = new ArrayList<Node>();
+			String id = "";
+			for(int i=1; i<data.length; i++) {
+				if(data[0][i-1] != null) id = data[0][i-1].toString();
+				else id = "node"+i;
+				graph.add(new Node(id));
+			}
+			for(int i=1; i<data.length; i++) {
+				int count = 0;
+				for(int j=0; j<data[0].length; j++) {
+					if((Integer)data[i][j] != 0) {
+						graph.get(i-1).addBranch((Integer)data[i][j], graph.get(j));
+						count++;
+					}
+				}
+				graph.get(i-1).setH(count);
+			}
+			
+			graph.get(0).g = 0;
+			String path = SearchAlgorithms.aStar(graph.get(0), graph.get(target));
+			this.messages.add(path);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			this.messages.add("An error occured.");
+		}
+	}
+	
+	private void sort() {
+		try {
+			if(data.length == 1) {
+				//SortAlgorithms.quickSort(data[0], 0, data[0].length-1);
+				SortAlgorithms.heapSort(data[0]);
+				
+				this.messages.add("Your sorted array:");
+				String[] output = MyUtilities.printArr(data[0]).split("\n", 0);
+				for(int i=0; i<output.length; i++) {
+					this.messages.add(output[i]);
+				}
+			}
+			else {
+				this.messages.add("You can't sort a graph.");
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			this.messages.add("An error occured.");
 		}
 	}
 	

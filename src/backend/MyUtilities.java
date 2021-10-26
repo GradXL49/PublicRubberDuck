@@ -6,6 +6,8 @@
 
 package backend;
 
+import java.util.ArrayList;
+
 public class MyUtilities {
 	//check if a string can be an int
 	//modified from https://stackoverflow.com/questions/237159/whats-the-best-way-to-check-if-a-string-represents-an-integer-in-java
@@ -46,6 +48,17 @@ public class MyUtilities {
 		
 		for(int i=0; i<arr.length; i++) {
 			out += "array["+i+"] = " + arr[i].toString() + "\n";
+		}
+		
+		return out;
+	}
+	
+	//print an array list
+	public static String printArr(ArrayList<Object> arr) {
+		String out = "";
+		
+		for(int i=0; i<arr.size(); i++) {
+			out += arr.get(i).toString() + " ";
 		}
 		
 		return out;

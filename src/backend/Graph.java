@@ -14,6 +14,7 @@ public class Graph {
 	public LinkedList<Integer> adj[]; //Adjacency Lists
 	
 	// Constructor
+	@SuppressWarnings("unchecked")
 	public Graph(int v) {
 		V = v;
 		adj = new LinkedList[v];

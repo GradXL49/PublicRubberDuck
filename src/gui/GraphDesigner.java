@@ -6,36 +6,22 @@
 
 package gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 import backend.MessageService;
 import backend.MyUtilities;
 
-import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JLabel;
-import java.awt.Font;
-import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JSpinner;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JButton;
 
 public class GraphDesigner extends JDialog {
 	/**
@@ -47,7 +33,8 @@ public class GraphDesigner extends JDialog {
 	private JLabel lblNodeContent;
 	private JScrollPane spContent;
 	private DefaultTableModel tmContent;
-	private DefaultTableModel tmConnect;
+	private JTable tblConnect;
+	private MyTableModel tmConnect;
 	private JButton btnSubmit;
 
 	/**
@@ -72,11 +59,11 @@ public class GraphDesigner extends JDialog {
 	 */
 	public GraphDesigner(boolean[] success, MessageService data) {
 		setModal(true);
-		initializeComponents();
+		initializeComponents(success[1]);
 		initializeActions(success, data);
 	}
 	
-	private void initializeComponents() {
+	private void initializeComponents(boolean weighted) {
 		setTitle("Graph Designer");
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 750, 700);
@@ -152,11 +139,10 @@ public class GraphDesigner extends JDialog {
 					.addContainerGap())
 		);
 		
-		tmConnect = new DefaultTableModel();
-		initializeConnectTable();
-		JTable tblConnections = new JTable(tmConnect);
-		tblConnections.setRowSelectionAllowed(false);
-		spConnections.setViewportView(tblConnections);
+		tmConnect = new MyTableModel();
+		tblConnect = new JTable();
+		tblConnect.setRowSelectionAllowed(false);
+		spConnections.setViewportView(tblConnect);
 		
 		tmContent = new DefaultTableModel();
 		initializeContentTable();
@@ -202,7 +188,7 @@ public class GraphDesigner extends JDialog {
 		spinnerSize.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				updateContentTable((Integer)spinnerSize.getValue());
-				updateConnectTable((Integer)spinnerSize.getValue());
+				initializeConnectTable(success[1]);
 			}
 		});
 		
@@ -235,8 +221,8 @@ public class GraphDesigner extends JDialog {
 			public void tableChanged(TableModelEvent e) {
 				if(e.getType()==TableModelEvent.UPDATE && e.getColumn()>0) {
 					Object value = tmConnect.getValueAt(e.getLastRow(), e.getColumn());
-					if(value != null && !MyUtilities.isDouble(value.toString())) {
-						JOptionPane.showMessageDialog(null, "Invalid Input:\nYour input could not be determined as a number.");
+					if(value != null && !MyUtilities.isInt(value.toString())) {
+						JOptionPane.showMessageDialog(null, "Invalid Input:\nYour input could not be determined as an Integer.");
 						tmConnect.setValueAt(null, e.getLastRow(), e.getColumn());
 					}
 				}
@@ -253,62 +239,36 @@ public class GraphDesigner extends JDialog {
 		});
 	}
 	
-	private void initializeConnectTable() {
-		//reset table model
-		tmConnect.setColumnCount(0);
-		tmConnect.setRowCount(0);
+	private void initializeConnectTable(boolean weighted) {
+		//make a new table model out of an Object[][]
+		int n = (Integer)spinnerSize.getValue();
+		if(n == 0) return;
+		String[] columns = new String[n+1];
+		Object[][] data = new Object[n][n+1];
 		
 		//add columns
-		tmConnect.addColumn("");
-		for(int i=0; i<(Integer)spinnerSize.getValue(); i++) {
-			tmConnect.addColumn("Node " + (i+1));
+		columns[0] = "";
+		for(int i=1; i<=n; i++) {
+			columns[i] = "Node "+i;
 		}
 		
 		//add rows
-		Object[] rowContent = new Object[(Integer)spinnerSize.getValue() + 1];
-		rowContent[0] = "";
-		for(int i=1; i<(Integer)spinnerSize.getValue()+1; i++) {
-			rowContent[i] = null;
+		for(int i=0; i<n; i++) {
+			data[i][0] = "Node "+(i+1);
+			for(int j=1; j<=n; j++) {
+				if(weighted) data[i][j] = 0;
+				else data[i][j] = Boolean.FALSE;
+			}
 		}
-		for(int i=0; i<(Integer)spinnerSize.getValue(); i++) {
-			rowContent[0] = "Node " + (i+1);
-			tmConnect.addRow(rowContent);
-		}
+		
+		//reset
+		tmConnect = new MyTableModel(data, columns);
+		tblConnect.setModel(tmConnect);
 	}
 	
 	private void initializeContentTable() {
 		tmContent.addColumn("Array Index");
 		tmContent.addColumn("Data");
-	}
-	
-	private void updateConnectTable(int value) {
-		//reset table model
-		tmConnect.setColumnCount(0);
-		tmConnect.setRowCount(0);
-		
-		int row = tmConnect.getRowCount();
-		if(value-row > 0) {
-			//add columns
-			tmConnect.addColumn("");
-			for(int i=row; i<value; i++) {
-				tmConnect.addColumn("Node " + (i+1));
-			}
-			
-			//add rows
-			Object[] rowContent = new Object[(Integer)spinnerSize.getValue() + 1];
-			rowContent[0] = "";
-			for(int i=row+1; i<value+1; i++) {
-				rowContent[i] = null;
-			}
-			for(int i=row; i<value; i++) {
-				rowContent[0] = "Node " + (i+1);
-				tmConnect.addRow(rowContent);
-			}
-		}
-		else {
-			tmConnect.setRowCount(value);
-			tmConnect.setColumnCount(value);
-		}
 	}
 	
 	private void updateContentTable(int value) {
@@ -355,7 +315,8 @@ public class GraphDesigner extends JDialog {
 					try {
 						data[i][j] = Integer.parseInt(tmConnect.getValueAt(i-1, j).toString());
 					} catch(Exception e) {
-						data[i][j] = 0;
+						if((Boolean)tmConnect.getValueAt(i-1, j)) data[i][j] = 1;
+						else data[i][j] = 0;
 					}
 				}
 			}
@@ -368,4 +329,58 @@ public class GraphDesigner extends JDialog {
 			return false;
 		}
 	}
+	
+	//modified from https://kodejava.org/how-do-i-render-boolean-value-as-checkbox-in-jtable-component/
+	class MyTableModel extends AbstractTableModel {
+        //default serial version uid
+		private static final long serialVersionUID = 1L;
+		String[] columns;
+        Object[][] data;
+        
+        public MyTableModel(Object[][] d, String[] c) {
+        	data = d;
+        	columns = c;
+        }
+        
+        public MyTableModel() {
+        	data = new Object[0][0];
+        	columns = new String[0];
+        }
+
+        public int getRowCount() {
+            return data.length;
+        }
+
+        public int getColumnCount() {
+            return columns.length;
+        }
+
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            return data[rowIndex][columnIndex];
+        }
+        
+        public boolean isCellEditable(int row, int column) {
+        	return column != 0;
+        }
+        
+        public void toggleValue(int r, int c) {
+        	if(data[r][c] instanceof Boolean) {
+        		data[r][c] = !(Boolean)data[r][c];
+        	}
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columns[column];
+        }
+        
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            return data[0][columnIndex].getClass();
+        }
+        
+        public void setValueAt(Object o, int row, int col) {
+        	data[row][col] = o;
+        }
+    }
 }
