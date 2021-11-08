@@ -46,8 +46,19 @@ public class MyUtilities {
 	public static String printArr(Object[] arr) {
 		String out = "";
 		
-		for(int i=0; i<arr.length; i++) {
-			out += "array["+i+"] = " + arr[i].toString() + "\n";
+		for(int i=0; i<arr.length; i++) { 
+			out += "array["+i+"] = ";
+			try {
+				out += arr[i].toString();
+			}
+			catch(Exception e) {
+				if(arr[i] == null) out += "null";
+				else {
+					e.printStackTrace();
+					return "There was an unprecidented error printing the given array.";
+				}
+			}
+			if(i < arr.length-1) out += "\n";
 		}
 		
 		return out;

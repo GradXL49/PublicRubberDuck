@@ -8,6 +8,7 @@ package backend;
 
 import java.util.ArrayList;
 
+import agent.AgentModel;
 import gui.ArrayDesigner;
 import gui.GraphDesigner;
 
@@ -15,14 +16,21 @@ public class MessageService {
 	//variables
 	private ArrayList<String> messages;
 	private int current;
+	private AgentModel agent;
+	private String[] options;
 	Object[][] data;
 	
 	//constructor
 	MessageService() {
+		agent = new AgentModel();
+		options = new String[4];
+		for(int i=0; i<options.length; i++) {
+			options[i] = null;
+		}
 		this.messages = new ArrayList<String>();
 		this.current = 0;
 		this.messages.add("Welcome to the Rubber Duck Program!");
-		this.messages.add("What kind of data structure are we working with today?");
+		this.messages.add("What can I help you with today?");
 	}
 	
 	public ArrayList<String> getNewMessages() {
@@ -38,7 +46,10 @@ public class MessageService {
 	
 	public void receiveMessage(String message) {
 		String response = this.processMessage(message);
-		this.messages.add(response);
+		String[] output = response.split("\n", 0);
+		for(int i=0; i<output.length; i++) {
+			this.messages.add(output[i]);
+		}
 		
 		if(response.contentEquals("Okay, let's make an array!")) {
 			makeArray();
@@ -56,6 +67,16 @@ public class MessageService {
 	}
 	
 	public String processMessage(String message) {
+		if(message.contentEquals("restart")) {
+			for(int i=0; i<options.length; i++) {
+				options[i] = null;
+			}
+			return "What can I help you with today?";
+		}
+		
+		agent.getResponse(message, options);
+		return options[0];
+		/*
 		message = message.toLowerCase();
 		String response = "";
 		
@@ -110,6 +131,7 @@ public class MessageService {
 		}
 		
 		return response;
+		*/
 	}
 	
 	private void makeArray() {
