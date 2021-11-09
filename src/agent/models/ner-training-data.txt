@@ -1,0 +1,171 @@
+I would like to <START:operation> sort <END> an <START:db_type> array <END>.
+want to <START:operation> search <END> an <START:db_type> array <END>
+I want to <START:operation> search <END> an <START:db_type> array <END>.
+I would like to <START:operation> search <END> an <START:db_type> array <END>.
+want to <START:operation> sort <END> an <START:db_type> array <END>
+<START:operation> search <END> <START:db_type> array <END>
+<START:db_type> array <END> <START:operation> search <END>
+<START:operation> sort <END> <START:db_type> array <END>
+<START:db_type> array <END> <START:operation> sort <END>
+let me <START:operation> search <END> an <START:db_type> array <END>
+let me <START:operation> sort <END> an <START:db_type> array <END>
+let me <START:operation> search <END> a <START:db_type> array <END>
+let me <START:operation> sort <END> a <START:db_type> array <END>
+<START:operation> sort <END> a <START:db_type> array <END>
+<START:operation> sort <END> an <START:db_type> array <END>
+<START:operation> search <END> a <START:db_type> array <END>
+<START:operation> search <END> an <START:db_type> array <END>
+let's <START:operation> search <END> an <START:db_type> array <END>!
+let's <START:operation> search <END> a <START:db_type> array <END>!
+let's <START:operation> sort <END> an <START:db_type> array <END>!
+let's <START:operation> sort <END> a <START:db_type> array <END>!
+can I <START:operation> search <END> an <START:db_type> array <END>?
+can I <START:operation> search <END> a <START:db_type> array <END>?
+can I <START:operation> sort <END> an <START:db_type> array <END>?
+can I <START:operation> sort <END> a <START:db_type> array <END>?
+make an <START:db_type> array <END> and <START:operation> sort <END> it
+make an <START:db_type> array <END> and <START:operation> search <END> it
+help me <START:operation> sort <END> an <START:db_type> array <END>
+help me <START:operation> search <END> an <START:db_type> array <END>
+I would like to find a <START:operation> path <END> on a <START:db_type> graph <END>.
+want to <START:operation> search <END> a <START:db_type> graph <END>
+I want to <START:operation> search <END> a <START:db_type> graph <END>.
+I would like to <START:operation> search <END> a <START:db_type> graph <END>.
+want to find a <START:operation> path <END> in a <START:db_type> graph <END>
+<START:operation> search <END> <START:db_type> graph <END>
+<START:db_type> graph <END> <START:operation> search <END>
+<START:operation> path <END> <START:db_type> graph <END>
+<START:db_type> graph <END> <START:operation> path <END>
+let me <START:operation> search <END> an <START:db_type> graph <END>
+let me find a <START:operation> path <END> on a <START:db_type> graph <END>
+let me <START:operation> search <END> a <START:db_type> graph <END>
+let me find a <START:operation> path <END> in a <START:db_type> graph <END>
+<START:operation> path <END> in <START:db_type> graph <END>
+<START:operation> search <END> an <START:db_type> graph <END>
+<START:operation> path <END> on <START:db_type> graph <END>
+<START:operation> search <END> a <START:db_type> graph <END>
+let's <START:operation> search <END> an <START:db_type> graph <END>!
+let's <START:operation> search <END> a <START:db_type> graph <END>!
+let's <START:operation> path <END> a <START:db_type> graph <END>!
+let's find a <START:operation> path <END> in a <START:db_type> graph <END>!
+can I <START:operation> search <END> an <START:db_type> graph <END>?
+can I <START:operation> search <END> a <START:db_type> graph <END>?
+can I look for a <START:operation> path <END> in a <START:db_type> graph <END>?
+can I look for a <START:operation> path <END> on a <START:db_type> graph <END>?
+find a <START:operation> path <END> in a <START:db_type> graph <END>
+find a <START:operation> path <END> on a <START:db_type> graph <END>
+I want to find a <START:operation> path <END> in a <START:db_type> graph <END>
+I want to find a <START:operation> path <END> on a <START:db_type> graph <END>
+can I find a <START:operation> path <END> in a <START:db_type> graph <END>
+can I find a <START:operation> path <END> on a <START:db_type> graph <END>
+make a <START:db_type> graph <END> and <START:operation> search <END> it
+make a <START:db_type> graph <END> and <START:operation> path <END> on it
+help me <START:operation> search <END> a <START:db_type> graph <END>
+help me find a <START:operation> path <END> on a <START:db_type> graph <END>
+I would like to find a <START:operation> path <END> on a <START:g_type> weighted <END> <START:db_type> graph <END>.
+want to <START:operation> search <END> a <START:g_type> weighted <END> <START:db_type> graph <END>
+I want to <START:operation> search <END> a <START:g_type> weighted <END> <START:db_type> graph <END>.
+I would like to <START:operation> search <END> a <START:g_type> weighted <END> <START:db_type> graph <END>.
+want to find a <START:operation> path <END> in a <START:g_type> weighted <END> <START:db_type> graph <END>
+<START:operation> search <END> <START:g_type> weighted <END> <START:db_type> graph <END>
+<START:g_type> weighted <END> <START:db_type> graph <END> <START:operation> search <END>
+<START:operation> path <END> <START:g_type> weighted <END> <START:db_type> graph <END>
+<START:g_type> weighted <END> <START:db_type> graph <END> <START:operation> path <END>
+let me <START:operation> search <END> an <START:g_type> weighted <END> <START:db_type> graph <END>
+let me find a <START:operation> path <END> on a <START:g_type> weighted <END> <START:db_type> graph <END>
+let me <START:operation> search <END> a <START:g_type> weighted <END> <START:db_type> graph <END>
+let me find a <START:operation> path <END> in a <START:g_type> weighted <END> <START:db_type> graph <END>
+<START:operation> path <END> in <START:g_type> weighted <END> <START:db_type> graph <END>
+<START:operation> search <END> an <START:g_type> weighted <END> <START:db_type> graph <END>
+<START:operation> path <END> on <START:g_type> weighted <END> <START:db_type> graph <END>
+<START:operation> search <END> a <START:g_type> weighted <END> <START:db_type> graph <END>
+let's <START:operation> search <END> an <START:g_type> weighted <END> <START:db_type> graph <END>!
+let's <START:operation> search <END> a <START:g_type> weighted <END> <START:db_type> graph <END>!
+let's <START:operation> path <END> a <START:g_type> weighted <END> <START:db_type> graph <END>!
+let's find a <START:operation> path <END> in a <START:g_type> weighted <END> <START:db_type> graph <END>!
+can I <START:operation> search <END> an <START:g_type> weighted <END> <START:db_type> graph <END>?
+can I <START:operation> search <END> a <START:g_type> weighted <END> <START:db_type> graph <END>?
+can I look for a <START:operation> path <END> in a <START:g_type> weighted <END> <START:db_type> graph <END>?
+can I look for a <START:operation> path <END> on a <START:g_type> weighted <END> <START:db_type> graph <END>?
+find a <START:operation> path <END> in a <START:g_type> weighted <END> <START:db_type> graph <END>
+find a <START:operation> path <END> on a <START:g_type> weighted <END> <START:db_type> graph <END>
+I want to find a <START:operation> path <END> in a <START:g_type> weighted <END> <START:db_type> graph <END>
+I want to find a <START:operation> path <END> on a <START:g_type> weighted <END> <START:db_type> graph <END>
+can I find a <START:operation> path <END> in a <START:g_type> weighted <END> <START:db_type> graph <END>
+can I find a <START:operation> path <END> on a <START:g_type> weighted <END> <START:db_type> graph <END>
+make a <START:g_type> weighted <END> <START:db_type> graph <END> and <START:operation> search <END> it
+make a <START:g_type> weighted <END> <START:db_type> graph <END> and <START:operation> path <END> on it
+help me <START:operation> search <END> a <START:g_type> weighted <END> <START:db_type> graph <END>
+help me find a <START:operation> path <END> on a <START:g_type> weighted <END> <START:db_type> graph <END>
+I would like to find a <START:operation> path <END> on a <START:g_type> unweighted <END> <START:db_type> graph <END>.
+want to <START:operation> search <END> a <START:g_type> unweighted <END> <START:db_type> graph <END>
+I want to <START:operation> search <END> a <START:g_type> unweighted <END> <START:db_type> graph <END>.
+I would like to <START:operation> search <END> a <START:g_type> unweighted <END> <START:db_type> graph <END>.
+want to find a <START:operation> path <END> in a <START:g_type> unweighted <END> <START:db_type> graph <END>
+<START:operation> search <END> <START:g_type> unweighted <END> <START:db_type> graph <END>
+<START:g_type> unweighted <END> <START:db_type> graph <END> <START:operation> search <END>
+<START:operation> path <END> <START:g_type> unweighted <END> <START:db_type> graph <END>
+<START:g_type> unweighted <END> <START:db_type> graph <END> <START:operation> path <END>
+let me <START:operation> search <END> an <START:g_type> unweighted <END> <START:db_type> graph <END>
+let me find a <START:operation> path <END> on a <START:g_type> unweighted <END> <START:db_type> graph <END>
+let me <START:operation> search <END> a <START:g_type> unweighted <END> <START:db_type> graph <END>
+let me find a <START:operation> path <END> in a <START:g_type> unweighted <END> <START:db_type> graph <END>
+<START:operation> path <END> in <START:g_type> unweighted <END> <START:db_type> graph <END>
+<START:operation> search <END> an <START:g_type> unweighted <END> <START:db_type> graph <END>
+<START:operation> path <END> on <START:g_type> unweighted <END> <START:db_type> graph <END>
+<START:operation> search <END> a <START:g_type> unweighted <END> <START:db_type> graph <END>
+let's <START:operation> search <END> an <START:g_type> unweighted <END> <START:db_type> graph <END>!
+let's <START:operation> search <END> a <START:g_type> unweighted <END> <START:db_type> graph <END>!
+let's <START:operation> path <END> a <START:g_type> unweighted <END> <START:db_type> graph <END>!
+let's find a <START:operation> path <END> in a <START:g_type> unweighted <END> <START:db_type> graph <END>!
+can I <START:operation> search <END> an <START:g_type> unweighted <END> <START:db_type> graph <END>?
+can I <START:operation> search <END> a <START:g_type> unweighted <END> <START:db_type> graph <END>?
+can I look for a <START:operation> path <END> in a <START:g_type> unweighted <END> <START:db_type> graph <END>?
+can I look for a <START:operation> path <END> on a <START:g_type> unweighted <END> <START:db_type> graph <END>?
+find a <START:operation> path <END> in a <START:g_type> unweighted <END> <START:db_type> graph <END>
+find a <START:operation> path <END> on a <START:g_type> unweighted <END> <START:db_type> graph <END>
+I want to find a <START:operation> path <END> in a <START:g_type> unweighted <END> <START:db_type> graph <END>
+I want to find a <START:operation> path <END> on a <START:g_type> unweighted <END> <START:db_type> graph <END>
+can I find a <START:operation> path <END> in a <START:g_type> unweighted <END> <START:db_type> graph <END>
+can I find a <START:operation> path <END> on a <START:g_type> unweighted <END> <START:db_type> graph <END>
+make a <START:g_type> unweighted <END> <START:db_type> graph <END> and <START:operation> search <END> it
+make a <START:g_type> unweighted <END> <START:db_type> graph <END> and <START:operation> path <END> on it
+help me <START:operation> search <END> a <START:g_type> unweighted <END> <START:db_type> graph <END>
+help me find a <START:operation> path <END> on a <START:g_type> unweighted <END> <START:db_type> graph <END>
+I want to make an <START:db_type> array <END>.
+I would like to make an <START:db_type> array <END>.
+can I make an <START:db_type> array <END>?
+let's make an <START:db_type> array <END>!
+make <START:db_type> array <END>.
+<START:db_type> array <END>.
+<START:db_type> graph <END>.
+<START:g_type> weighted <END> <START:db_type> graph <END>.
+<START:g_type> unweighted <END> <START:db_type> graph <END>.
+let me make a <START:db_type> graph <END>!
+let me make an unwieghted <START:db_type> graph <END>.
+let me make a <START:g_type> weighted <END> <START:db_type> graph <END>.
+I want to make a <START:g_type> weighted <END> <START:db_type> graph <END>!
+I want to make an <START:g_type> unweighted <END> <START:db_type> graph <END>!
+help me make an <START:db_type> array <END>?
+help me make a <START:g_type> weighted <END> <START:db_type> graph <END>?
+I want to <START:operation> search <END>.
+I want to <START:operation> sort <END>.
+I want to find a <START:operation> path <END>.
+I would like to <START:operation> search <END>.
+I would like to <START:operation> sort <END>.
+I would like to find a <START:operation> path <END>.
+<START:operation> search <END>.
+<START:operation> sort <END>.
+<START:operation> path <END>.
+can I <START:operation> search <END>?
+can I <START:operation> sort <END>?
+can I find a <START:operation> path <END>?
+let's <START:operation> search <END>!
+let's <START:operation> sort <END>!
+let's find a <START:operation> path <END>!
+let me <START:operation> search <END>.
+let me <START:operation> sort <END>.
+let me find a <START:operation> path <END>.
+help me <START:operation> search <END>?
+help me <START:operation> sort <END>?
+help me find a <START:operation> path <END>?
