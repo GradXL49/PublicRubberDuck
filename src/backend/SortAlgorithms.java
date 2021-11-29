@@ -11,7 +11,13 @@ public class SortAlgorithms {
 	 * Insertion Sorts
 	 * modified from https://www.geeksforgeeks.org/recursive-insertion-sort/
 	 */
-	public static void insertionNumberSort(Object[] arr, int n) {
+	public static void insertionSort(Object[] arr) {
+		if(arr[0] instanceof String)
+			insertionTextSort(arr, arr.length);
+		else insertionNumberSort(arr, arr.length);
+	}
+	
+	private static void insertionNumberSort(Object[] arr, int n) {
 		if(n <= 1)
 			return;
 		
@@ -27,7 +33,7 @@ public class SortAlgorithms {
 		arr[j+1] = last;
 	}
 	
-	public static void insertionTextSort(Object[] arr, int n) {
+	private static void insertionTextSort(Object[] arr, int n) {
 		if(n <= 1)
 			return;
 		

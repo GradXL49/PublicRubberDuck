@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import backend.MessageService;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.Font;
 
 public class MainWindow {
 
@@ -88,33 +89,35 @@ public class MainWindow {
 		GroupLayout groupLayout = new GroupLayout(frmRubberDuck.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
+				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(spConvo, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(spInput, GroupLayout.PREFERRED_SIZE, 597, GroupLayout.PREFERRED_SIZE)
+							.addComponent(spInput, GroupLayout.DEFAULT_SIZE, 597, Short.MAX_VALUE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnSubmit, GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE))
-						.addComponent(spConvo, GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE))
+							.addComponent(btnSubmit, GroupLayout.PREFERRED_SIZE, 111, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
+				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(spConvo, GroupLayout.PREFERRED_SIZE, 407, GroupLayout.PREFERRED_SIZE)
+					.addComponent(spConvo, GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(spInput, GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
-						.addComponent(btnSubmit, GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE))
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+						.addComponent(btnSubmit, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(spInput, GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		
 		lmMessages = new DefaultListModel<String>();
 		JList<String> lsMessages = new JList<String>(lmMessages);
+		lsMessages.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		spConvo.setViewportView(lsMessages);
 		
 		taInput = new JTextArea();
+		taInput.setFont(new Font("Courier New", Font.PLAIN, 15));
 		taInput.setTabSize(4);
 		taInput.setWrapStyleWord(true);
 		taInput.setLineWrap(true);

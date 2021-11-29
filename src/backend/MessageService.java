@@ -6,6 +6,7 @@
 
 package backend;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import agent.AgentModel;
@@ -18,12 +19,17 @@ public class MessageService {
 	private int current;
 	private AgentModel agent;
 	private String[] options;
+	private boolean dataMade;
+	private boolean sorted;
 	Object[][] data;
+	DecimalFormat dec = new DecimalFormat("#.00");
 	
 	//constructor
 	MessageService() {
 		agent = new AgentModel();
-		options = new String[4];
+		options = new String[5];
+		dataMade = false;
+		sorted = false;
 		for(int i=0; i<options.length; i++) {
 			options[i] = null;
 		}
@@ -46,24 +52,54 @@ public class MessageService {
 	
 	public void receiveMessage(String message) {
 		String response = this.processMessage(message);
-		String[] output = response.split("\n", 0);
-		for(int i=0; i<output.length; i++) {
-			this.messages.add(output[i]);
-		}
 		
-		if(response.contentEquals("Okay, let's make an array!")) {
+		if(response.contains("Okay, let's make an array!")) {
+			this.messages.add(response);
 			makeArray();
 		}
-		else if(response.contentEquals("Okay, let's make an unweighted graph!")) {
-			makeGraph(false);
+		else if(response.contentEquals("Okay, let's make an unweighted graph.")) {
+			if(options[3] != null)
+				makeGraph(options[3].contentEquals("weighted"));
 		}
-		else if(response.contentEquals("Okay, let's make a weighted graph!")) {
-			makeGraph(true);
-		}
-
-		else if(response.contentEquals("Okay, let's sort it!")) {
+		/* else if(response.contentEquals("Okay, let's sort it!")) {
 			sort();
+		}*/
+		
+		if(optionsFull()) {
+			if(!this.dataMade) {
+				if(options[2].contentEquals("array")) makeArray();
+				else makeGraph(options[3].contentEquals("weighted"));
+			}
+			
+			if(this.dataMade) {
+				if(options[1] == null) {
+					response = "";
+					giveRecommendation();
+				}
+				else if(options[1].contentEquals("search")) {
+					if(options[4] == null) response = "What are we looking for?";
+					else search(options[4]);
+				}
+				else if(options[1].contentEquals("sort")) {
+					if(options[2].contentEquals("graph"))
+						response = "We can't sort a graph. Would you like to search it or find a path?";
+					else sort();
+				}
+				else if(options[2].contentEquals("array")) response = "We can't find a path on an array. Would you like to search or sort?";
+				else if(options[1].contentEquals("path dijkstra")) {
+					if(options[4] == null) response = "Which is the starting node?";
+					else shortestPath(options[4]);
+				}
+				else {
+					if(options[4] == null) response = "Which is the target node?";
+					else aStar(options[4]);
+				}
+			
+				if(!response.isEmpty()) this.messages.add(response);
+				options[4] = null;
+			}
 		}
+		else this.messages.add(response);
 	}
 	
 	public String processMessage(String message) {
@@ -71,12 +107,23 @@ public class MessageService {
 			for(int i=0; i<options.length; i++) {
 				options[i] = null;
 			}
+			dataMade = false;
+			sorted = false;
 			return "What can I help you with today?";
 		}
 		
-		agent.getResponse(message, options);
+		boolean input;
+		try {
+			String last = messages.get(messages.size()-1);
+			input = last.contentEquals("What are we looking for?") || last.contentEquals("Which is the starting node?") || last.contentEquals("Which is the target node?");
+		}
+		catch(Exception e) {
+			input = false;
+		}
+		agent.getResponse(message, options, input);
 		return options[0];
-		/*
+		
+		/* THIS IS THE ORIGINAL HANDMADE AI USED FOR INITIAL DEVELOPMENT/TESTING
 		message = message.toLowerCase();
 		String response = "";
 		
@@ -142,12 +189,13 @@ public class MessageService {
 			frame.setVisible(true);
 			
 			if(success[0]) {
+				this.dataMade = true;
 				this.messages.add("Your array: ");
 				String[] output = MyUtilities.printArr(data[0]).split("\n", 0);
 				for(int i=0; i<output.length; i++) {
 					this.messages.add(output[i]);
 				}
-				this.messages.add("Would you like to search, or sort your array?");
+				//this.messages.add("Would you like to search, or sort your array?");
 			}
 			else {
 				this.messages.add("Hmmm... Looks like you need more time to decide.");
@@ -165,12 +213,13 @@ public class MessageService {
 			frame.setVisible(true);
 			
 			if(success[0]) {
+				this.dataMade = true;
 				this.messages.add("Your graph: ");
 				String[] output = MyUtilities.printGraph(data).split("\n", 0);
 				for(int i=0; i<output.length; i++) {
 					this.messages.add(output[i]);
 				}
-				this.messages.add("Would you like to search, or find a path on your graph?");
+				//this.messages.add("Would you like to search, or find a path on your graph?");
 			}
 			else {
 				this.messages.add("Hmmm... Looks like you need more time to decide.");
@@ -182,6 +231,14 @@ public class MessageService {
 	}
 	
 	private void search(String input) {
+		if(!sorted) {
+			sorted = MyUtilities.checkSorted(data[0]);
+			if(!sorted) {
+				this.messages.add("Looks like the array isn't sorted, we should do that to make the search more efficient.");
+				sort();
+			}
+		}
+		
 		if(data.length == 1) { //if it is an array
 			int pos = -1;
 			if(data[0][0] instanceof String) { //string array
@@ -190,7 +247,14 @@ public class MessageService {
 					text[i] = data[0][i].toString();
 				}
 				
-				pos = SearchAlgorithms.exponentialTextSearch(text, text.length, input);
+				if(text.length > 100) {
+					this.messages.add("Because your array is so large, I recommend an Exponential Search.");
+					pos = SearchAlgorithms.exponentialTextSearch(text, text.length, input);
+				}
+				else {
+					this.messages.add("Your array isn't very big, so I recommend a Binary Search.");
+					pos = SearchAlgorithms.binaryTextSearch(text, 0, text.length-1, input);
+				}
 			}
 			else { //number array
 				double target = 0;
@@ -207,7 +271,14 @@ public class MessageService {
 					numbers[i] = Double.parseDouble(data[0][i].toString());
 				}
 				
-				pos = SearchAlgorithms.exponentialNumberSearch(numbers, numbers.length, target);
+				if(numbers.length > 100) {
+					this.messages.add("Because your array is so large, I recommend an Exponential Search.");
+					pos = SearchAlgorithms.exponentialNumberSearch(numbers, numbers.length, target);
+				}
+				else {
+					this.messages.add("Your array isn't very big, so I recommend a Binary Search.");
+					pos = SearchAlgorithms.binaryNumberSearch(numbers, 0, numbers.length-1, target);
+				}
 			}
 			
 			if(pos < 0) this.messages.add(input + " was not found in the array.");
@@ -219,13 +290,13 @@ public class MessageService {
 			ArrayList<Object> path = new ArrayList<Object>();
 			Graph g = new Graph(data.length);
 			
-			if(data[0][0] == null) {
+			if(true) { //data[0][0] == null) {
 				int target;
 				try {
 					target = Integer.parseInt(input)-1;
 				}
 				catch(Exception e) {
-					this.messages.add(input + " could not be determined as an integer. Graphs with no data type must search by node index.");
+					this.messages.add(input + " could not be determined as an integer. Please reference the node by its index."); //Graphs with no data type must search by node index.");
 					return;
 				}
 				
@@ -278,7 +349,7 @@ public class MessageService {
 		
 	}
 	
-	private void astar(String input) {
+	private void aStar(String input) {
 		try {
 			int target = Integer.parseInt(input)-1;
 			
@@ -313,14 +384,32 @@ public class MessageService {
 	private void sort() {
 		try {
 			if(data.length == 1) {
-				//SortAlgorithms.quickSort(data[0], 0, data[0].length-1);
-				SortAlgorithms.heapSort(data[0]);
+				double invRate = MyUtilities.countInversions(data[0]);
+				
+				if(data[0].length <= 10) {
+					this.messages.add("Your array isn't very big, so I recommend an Insertion Sort.");
+					SortAlgorithms.insertionSort(data[0]);
+				}
+				else if(MyUtilities.isHeap(data[0], 0, data[0].length)) {
+					this.messages.add("Looks like your array is already in max-heap form, I recommend a Heap Sort.");
+					SortAlgorithms.heapSort(data[0]);
+				}
+				else if(invRate <= 5) {
+					this.messages.add("Your array contains only " + dec.format(invRate) + "% inversions, so I recommend an Insertion Sort.");
+					SortAlgorithms.insertionSort(data[0]);
+				}
+				else {
+					this.messages.add("Your array doesn't appear to be mostly sorted, so Quick Sort is the best choice.");
+					SortAlgorithms.quickSort(data[0], 0, data[0].length-1);
+				}
 				
 				this.messages.add("Your sorted array:");
 				String[] output = MyUtilities.printArr(data[0]).split("\n", 0);
 				for(int i=0; i<output.length; i++) {
 					this.messages.add(output[i]);
 				}
+				
+				sorted = true;
 			}
 			else {
 				this.messages.add("You can't sort a graph.");
@@ -333,10 +422,20 @@ public class MessageService {
 	}
 	
 	public void setDataArray(Object[] d) {
-		data = new Object[1][d.length];
+		/*data = new Object[1][d.length];
 		
 		for(int i=0; i<d.length; i++) {
 			data[0][i] = d[i];
+		}*/
+		
+		//for testing
+		data = new Object[1][101];
+		for(int i=0; i<101; i++) {
+			if(i<10) {
+				if(i%2 == 0) data[0][i] = i+2;
+				else data[0][i] = i;
+			}
+			else data[0][i] = i+1;
 		}
 	}
 	
@@ -348,5 +447,76 @@ public class MessageService {
 				data[i][j] = d[i][j+1];
 			}
 		}
+	}
+	
+	private void giveRecommendation() {
+		this.messages.add("Looks like you might need a recommendation for the operation to perform.");
+		try {
+			if(data.length == 1) {
+				this.messages.add("Since you made an array, we can search it or sort it.");
+				
+				if(data[0].length > 100) {
+					this.messages.add("Because your array is so large, I would recommend an Exponential Search.");
+				}
+				else {
+					this.messages.add("Your array isn't very big, so I would recommend a Binary Search.");
+				}
+				
+				double invRate = MyUtilities.countInversions(data[0]);
+				if(data[0].length <= 10) {
+					this.messages.add("Your array isn't very big, so for a sort I would recommend an Insertion Sort.");
+				}
+				else if(MyUtilities.isHeap(data[0], 0, data[0].length)) {
+					this.messages.add("Looks like your array is already in max-heap form, so for a sort I would recommend a Heap Sort.");
+				}
+				else if(invRate <= 5) {
+					this.messages.add("Your array contains only " + dec.format(invRate) + "% inversions, so for a sort I would recommend an Insertion Sort.");
+				}
+				else {
+					this.messages.add("Your array doesn't appear to be mostly sorted, so I think Quick Sort would be the best choice.");
+				}
+			}
+			else {
+				this.messages.add("Since you made a graph, we can search it or find a path on it.");
+				this.messages.add("If you would like to find a path from the root (Node 1) to another specific node, I would recommend the A* Search.");
+				this.messages.add("Or you can find the path to all other nodes from a specific starting point with Dijkstra's Algorithm.");
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			this.messages.add("An error occured.");
+		}
+	}
+	
+	private boolean optionsFull() {
+		if(options[2] != null) {
+			if(options[1] == null) {
+				return true;
+			}
+			else if(options[1].contentEquals("search") || options[1].contentEquals("sort") || options[1].contains("path")) {
+				if(options[2].contentEquals("array"))
+					return true;
+				else if(options[2].contentEquals("graph")) {
+					if(options[3] != null) {
+						if(options[3].contentEquals("weighted") || options[3].contentEquals("unweighted"))
+							return true;
+						else {
+							System.out.println("ERROR: Invalid g_type "+options[3]);
+							return false;
+						}
+					}
+					else return false;
+				}
+				else {
+					System.out.println("ERROR: Invalid db_type "+options[2]);
+					return false;
+				}
+			}
+			else {
+				System.out.println("ERROR: Invalid operation "+options[1]);
+				return false;
+			}
+		}
+		else return false;
 	}
 }

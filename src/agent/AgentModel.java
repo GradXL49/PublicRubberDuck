@@ -59,9 +59,9 @@ public class AgentModel {
 		}
 		
 		//initialize QnA pairings
-		questionAnswer.put("greeting", "Hello, how can I help you?");
-		questionAnswer.put("conversation-continue", "What else can I help you with?");
-		questionAnswer.put("conversation-complete", "Nice chatting with you. Bbye.");
+		questionAnswer.put("greeting", "Nice to meet you :) ");
+		questionAnswer.put("conversation-continue", "What else can I help you with? ");
+		questionAnswer.put("conversation-complete", "Nice chatting with you. Bbye. ");
 		questionAnswer.put("full-inquisition", "Let's do that!");
 		questionAnswer.put("operation-inquisition", "Okay, let's perform a ");
 		questionAnswer.put("db-inquisition", "Okay, let's make ");
@@ -79,7 +79,11 @@ public class AgentModel {
 	private String detectCategory(DoccatModel model, String[] finalTokens) throws IOException {
 		double[] probabilitiesOfOutcomes = catModel.categorize(finalTokens);
 		String category = catModel.getBestCategory(probabilitiesOfOutcomes);
-		System.out.println("Category: " + category + "\n");
+		System.out.println("Category: " + category);
+		System.out.println("Accuracies:");
+		for(int i=0; i<probabilitiesOfOutcomes.length; i++) {
+			System.out.println("\t" + catModel.getCategory(i) + ": " + probabilitiesOfOutcomes[i]);
+		}
 	 
 		return category;
 	}
@@ -152,8 +156,14 @@ public class AgentModel {
 	}
 	
 	//find entities
-	private Span[] detectEntities(String[] tokens, String[] response) {
-		return entityModel.find(tokens);
+	private Span[] detectEntities(String[] tokens, String[] response, int index) {
+		Span[] out = entityModel.find(tokens);
+		System.out.println("Entities from sentence #" + (index+1) + ":");
+		for(int i=0; i<out.length; i++) {
+			System.out.println("\t" + out[i]);
+		}
+		
+		return out;
 	}
 	
 	private void extractEntities(Span[] entities, String[] sentence, String[] response) {
@@ -167,11 +177,22 @@ public class AgentModel {
 			}
 			word = sentence[entities[j].getStart()];
 			
-			if(type > 0 && word != null) response[type] = word;
+			if(type > 0 && word != null) {
+				if(type == 1 && !word.contentEquals("path")) {
+					if(word.contentEquals("all") || word.contentEquals("every")) {
+						response[1] = "path dijkstra";
+					}
+					else if(word.contentEquals("specific") || word.contains("one") || word.contains("single")) {
+						response[1] = "path aStar";
+					}
+					else response[type] = word;
+				}
+				else response[type] = word;
+			}
 		}
 	}
 	
-	public void getResponse(String message, String[] response) {
+	public void getResponse(String message, String[] response, boolean input) {
 		try {
 			response[0] = "";
 			
@@ -184,9 +205,7 @@ public class AgentModel {
 				String[] tokens = tokenizeSentence(sentences[i]);
 				
 				//collect entities
-				entities[i] = detectEntities(tokens, response);
-				System.out.println("Entities from sentence " + i);
-				System.out.println(MyUtilities.printArr(entities[i]));
+				entities[i] = detectEntities(tokens, response, i);
 	 
 				// Tag separated words with POS tags to understand their gramatical structure.
 				String[] posTags = detectPOSTags(tokens);
@@ -201,27 +220,39 @@ public class AgentModel {
 				//get response based on category and check for entitites 
 				response[0] += questionAnswer.get(category);
 				
-				if(category.contains("inquisition")) {
+				if(input) {
+					response[4] = message;
+					response[0] = "";
+				}
+				else if(category.contains("inquisition")) {
 					extractEntities(entities[i], tokens, response);
 					//System.out.println("Response array:\n" + MyUtilities.printArr(response));
 					
 					switch(category) {
 					case "operation-inquisition":
-						response[0] += response[1]+".";
+						response[0] += response[1]+". ";
 						break;
 					case "db-inquisition":
-						if(response[2].contains("array")) response[0] += "an ";
-						else response[0] += "a ";
-						response[0] += response[2] + ".";
-					}
-					
-					//if any options are missing, ask for them
-					if(response[1] == null) response[0] += "\nAn operation type is missing, please let me know what you want to do with your data structure.";
-					else {
-						if(response[2] == null) response[0] += "\nYou did not specify a database type. Please tell me whether you want an array or a graph.";
-						else if(response[2].contentEquals("graph") && response[3]==null) response[0] += "\nDid you want a weighted, or unweighted graph?";
+						if(response[2].contains("array")) response[0] += "an array! ";
+						else response[0] += "a graph. ";
+						break;
+					default:
+						//if any options are missing, ask for them
+						if(response[1] == null) response[0] = "An operation type is missing, please let me know what you want to do with your data structure.";
+						else {
+							if(response[2] == null) response[0] = "You did not specify a database type. Please tell me whether you want an array or a graph.";
+							else if(response[2].contentEquals("graph")) {
+								if(response[3]==null) response[0] = "Did you want a weighted, or unweighted graph?";
+								else if(response[1].contentEquals("path")) response[0] = "Do you want all shortest paths or one specific path?";
+							}
+						}
 					}
 				}
+				
+				//for debug
+				System.out.println("Response dump:");
+				System.out.println(MyUtilities.printArr(response));
+				System.out.println();
 			}
 		}
 		catch(Exception e) {

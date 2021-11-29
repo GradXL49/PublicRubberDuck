@@ -169,3 +169,49 @@ let me find a <START:operation> path <END>.
 help me <START:operation> search <END>?
 help me <START:operation> sort <END>?
 help me find a <START:operation> path <END>?
+I want to find paths to <START:operation> all <END> nodes on the graph
+find <START:operation> all <END> shortest paths
+give <START:operation> all <END> paths
+I want to find a <START:operation> specific <END> shortest path
+find <START:operation> one <END> shortest path
+give a <START:operation> specific <END> shortest path
+I would like to find a <START:operation> all <END> paths on a <START:db_type> graph <END>.
+want to find a <START:operation> all <END> paths in a <START:db_type> graph <END>
+<START:operation> every <END> path in <START:db_type> graph <END>
+<START:db_type> graph <END> <START:operation> every <END> path
+let me find a <START:operation> every <END> path on a <START:db_type> graph <END>
+let me find a <START:operation> all <END> paths in a <START:db_type> graph <END>
+<START:operation> every <END> path in <START:db_type> graph <END>
+<START:operation> all <END> paths on <START:db_type> graph <END>
+let's get <START:operation> every <END> path in a <START:db_type> graph <END>!
+let's find <START:operation> all <END> paths in a <START:db_type> graph <END>!
+can I look for <START:operation> all <END> paths in a <START:db_type> graph <END>?
+can I look for <START:operation> every <END> path on a <START:db_type> graph <END>?
+find <START:operation> all <END> paths in a <START:db_type> graph <END>
+find a <START:operation> every <END> path on a <START:db_type> graph <END>
+I want to find <START:operation> all <END> paths in a <START:db_type> graph <END>
+I want to find <START:operation> every <END> path on a <START:db_type> graph <END>
+can I find <START:operation> all <END> paths in a <START:db_type> graph <END>
+can I find <START:operation> every <END> path on a <START:db_type> graph <END>
+make a <START:db_type> graph <END> and find <START:operation> all <END> paths on it
+help me find a <START:operation> every <END> path on a <START:db_type> graph <END>
+I would like to find a <START:operation> specific <END> path on a <START:db_type> graph <END>.
+want to find <START:operation> one <END> path in a <START:db_type> graph <END>
+<START:operation> specific <END> path <START:db_type> graph <END>
+<START:db_type> graph <END> <START:operation> one <END> path
+let me find <START:operation> one <END> path on a <START:db_type> graph <END>
+let me find a <START:operation> specific <END> path in a <START:db_type> graph <END>
+<START:operation> one <END> path in <START:db_type> graph <END>
+<START:operation> specific <END> path on <START:db_type> graph <END>
+let's get <START:operation> one <END> path on a <START:db_type> graph <END>!
+let's find a <START:operation> specific <END> path in a <START:db_type> graph <END>!
+can I look for <START:operation> one <END> path in a <START:db_type> graph <END>?
+can I look for a <START:operation> specific <END> path on a <START:db_type> graph <END>?
+find <START:operation> one <END> path in a <START:db_type> graph <END>
+find a <START:operation> specific <END> path on a <START:db_type> graph <END>
+I want to find <START:operation> one <END> path in a <START:db_type> graph <END>
+I want to find a <START:operation> specific <END> path on a <START:db_type> graph <END>
+can I find <START:operation> one <END> path in a <START:db_type> graph <END>
+can I find a <START:operation> specific <END> path on a <START:db_type> graph <END>
+make a <START:db_type> graph <END> and find <START:operation> one <END> path on it
+help me find a <START:operation> specific <END> path on a <START:db_type> graph <END>
