@@ -10,6 +10,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import agent.AgentModel;
+import export.*;
 import gui.ArrayDesigner;
 import gui.GraphDesigner;
 
@@ -231,16 +232,19 @@ public class MessageService {
 	}
 	
 	private void search(String input) {
+		String needSort = null;
 		if(!sorted) {
 			sorted = MyUtilities.checkSorted(data[0]);
 			if(!sorted) {
 				this.messages.add("Looks like the array isn't sorted, we should do that to make the search more efficient.");
-				sort();
+				needSort = sort();
 			}
 		}
 		
 		if(data.length == 1) { //if it is an array
 			int pos = -1;
+			boolean export = false;
+			String className;
 			if(data[0][0] instanceof String) { //string array
 				String[] text = new String[data[0].length];
 				for(int i=0; i<data[0].length; i++) {
@@ -250,10 +254,14 @@ public class MessageService {
 				if(text.length > 100) {
 					this.messages.add("Because your array is so large, I recommend an Exponential Search.");
 					pos = SearchAlgorithms.exponentialTextSearch(text, text.length, input);
+					className = "ExponentialTextSearch";
+					export = ArraySearchExport.generateCode("exponential", className, false, needSort, text, input);
 				}
 				else {
 					this.messages.add("Your array isn't very big, so I recommend a Binary Search.");
 					pos = SearchAlgorithms.binaryTextSearch(text, 0, text.length-1, input);
+					className = "BinaryTextSearch";
+					export = ArraySearchExport.generateCode("binary", className, false, needSort, text, input);
 				}
 			}
 			else { //number array
@@ -274,15 +282,22 @@ public class MessageService {
 				if(numbers.length > 100) {
 					this.messages.add("Because your array is so large, I recommend an Exponential Search.");
 					pos = SearchAlgorithms.exponentialNumberSearch(numbers, numbers.length, target);
+					className = "ExponentialNumSearch";
+					export = ArraySearchExport.generateCode("exponential", className, true, needSort, data[0], target);
 				}
 				else {
 					this.messages.add("Your array isn't very big, so I recommend a Binary Search.");
 					pos = SearchAlgorithms.binaryNumberSearch(numbers, 0, numbers.length-1, target);
+					className = "BinaryNumSearch";
+					export = ArraySearchExport.generateCode("binary", className, true, needSort, data[0], target);
 				}
 			}
 			
 			if(pos < 0) this.messages.add(input + " was not found in the array.");
 			else this.messages.add(input + " was found at position " + pos);
+			
+			if(export) this.messages.add("Code that performs your desired task was exported to the output package as "+className+".java");
+			else this.messages.add("Code generation failed. Check console for details.");
 		}
 		else { //if it is a graph
 			//String path = "";
@@ -381,26 +396,31 @@ public class MessageService {
 		}
 	}
 	
-	private void sort() {
+	private String sort() {
 		try {
 			if(data.length == 1) {
+				String s;
 				double invRate = MyUtilities.countInversions(data[0]);
 				
 				if(data[0].length <= 10) {
 					this.messages.add("Your array isn't very big, so I recommend an Insertion Sort.");
 					SortAlgorithms.insertionSort(data[0]);
+					s = "insertion";
 				}
 				else if(MyUtilities.isHeap(data[0], 0, data[0].length)) {
 					this.messages.add("Looks like your array is already in max-heap form, I recommend a Heap Sort.");
 					SortAlgorithms.heapSort(data[0]);
+					s = "heap";
 				}
 				else if(invRate <= 5) {
 					this.messages.add("Your array contains only " + dec.format(invRate) + "% inversions, so I recommend an Insertion Sort.");
 					SortAlgorithms.insertionSort(data[0]);
+					s = "insertion";
 				}
 				else {
 					this.messages.add("Your array doesn't appear to be mostly sorted, so Quick Sort is the best choice.");
 					SortAlgorithms.quickSort(data[0], 0, data[0].length-1);
+					s = "quick";
 				}
 				
 				this.messages.add("Your sorted array:");
@@ -410,14 +430,17 @@ public class MessageService {
 				}
 				
 				sorted = true;
+				return s;
 			}
 			else {
 				this.messages.add("You can't sort a graph.");
+				return null;
 			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 			this.messages.add("An error occured.");
+			return null;
 		}
 	}
 	
