@@ -194,6 +194,99 @@ public class ArraySortExport extends CodeExport {
 		generateQuickBody(f, arr, num, type);
 	}
 	
+	//generate code body for heap sort
+	private static void generateHeapBody(FileWriter f, Object[] arr, boolean num, String type) throws Exception {
+		try {
+			generateArrayVariables(f, type, arr, num, null);
+			
+			f.append("\t//main\n"
+					+"\tpublic static void main(String[] args) {\n"
+					+"\t\tSystem.out.println(\"Sorting...\");\n\n"
+					+"\t\theapSort(arr);\n\n"
+					+"\t\tSystem.out.print(\"Result: \");\n"
+					+"\t\tfor(int i=0; i<arr.length; i++) {\n"
+					+"\t\t\tSystem.out.print(arr[i]+\", \");\n"
+					+"\t\t}\n"
+					+"\t}\n\n");
+			
+			generateHeap(f, num, type);
+			
+			f.append("}\n\n");
+		}
+		catch(Exception e) {
+			throw e;
+		}
+	}
+	
+	//generate algorithm for heap sort
+	public static void generateHeap(FileWriter f, boolean num, String type) throws Exception {
+		try {
+			f.append("\t//Heap Sort modified from https://www.geeksforgeeks.org/heap-sort/\n"
+					+"\tprivate static void heapify("+type+" arr[], int n, int i) {\n"
+					+"\t\tint largest = i;\n\t\tint l = 2*i+1;\n\t\tint r = 2*i+2;\n\n");
+			
+			if(num) {
+				f.append("\t\tif(l<n && arr[l]>arr[largest]) {\n"
+						+"\t\t\tlargest = l;\n"
+						+"\t\t}\n\n"
+						+"\t\tif(r<n && arr[r]>arr[largest]) {\n"
+						+"\t\t\tlargest = r;\n"
+						+"\t\t}\n\n");
+			}
+			else {
+				f.append("\t\tif(l<n && arr[l].compareTo(arr[largest])>0) {\n"
+						+"\t\t\tlargest = l;\n"
+						+"\t\t}\n\n"
+						+"\t\tif(r<n && arr[r].compareTo(arr[largest])>0) {\n"
+						+"\t\t\tlargest = r;\n"
+						+"\t\t}\n\n");
+			}
+			
+			f.append("\t\tif(largest != i) {\n"
+					+"\t\t\t"+type+" swap = arr[i];\n"
+					+"\t\t\tarr[i] = arr[largest];\n"
+					+"\t\t\tarr[largest] = swap;\n\n"
+					+"\t\t\theapify(arr, n, largest);\n"
+					+"\t\t}\n\t}\n\n");
+			
+			f.append("\t//heap sort algorithm\n"
+					+"\tprivate static void heapSort("+type+" arr[]) {\n"
+					+"\t\tint n = arr.length;\n\n"
+					+"\t\tfor(int i=n/2-1; i>=0; i--) {\n"
+					+"\t\t\theapify(arr, n, i);\n"
+					+"\t\t}\n\n"
+					+"\t\tfor(int i=n-1; i>0; i--) {\n"
+					+"\t\t\t"+type+" temp = arr[0];\n"
+					+"\t\t\tarr[0] = arr[i];\n"
+					+"\t\t\tarr[i] = temp;\n\n"
+					+"\t\t\theapify(arr, i, 0);\n"
+					+"\t\t}\n\t}\n\n");
+		}
+		catch(Exception e) {
+			throw e;
+		}
+	}
+	
+	//generate code for heap sort
+	private static void heapSort(FileWriter f, String className, boolean num, Object[] arr) throws Exception {
+		String message = "Heap sort on a ";
+		if(num) message += "number ";
+		else message += "String ";
+		message += "array.";
+		generateHeader(f, message);
+		
+		String[] imports = {"java.util.*"};
+		generateImports(f, imports, className);
+		
+		String type;
+		if(num) {
+			if(arr[0] instanceof Integer) type = "int";
+			else type = "double";
+		}
+		else type = "String";
+		generateHeapBody(f, arr, num, type);
+	}
+	
 	//main
 	public static boolean generateCode(String type, String className, boolean num, Object[] arr) {
 		try {
@@ -210,6 +303,7 @@ public class ArraySortExport extends CodeExport {
 			switch(type) {
 			case "insertion": insertionSort(w, className, num, arr); break;
 			case "quick": quickSort(w, className, num, arr); break;
+			case "heap": heapSort(w, className, num, arr); break;
 			default: System.out.println("Error: Improper type passed."); w.close(); return false;
 			}
 			
@@ -225,7 +319,7 @@ public class ArraySortExport extends CodeExport {
 	
 	//for testing
 	public static void main(String[] args) {
-		Object[] arr = {8.7, 3.56, 0.22, 4.5};
-		generateCode("quick", "Test", true, arr);
+		Object[] arr = {12, 11, 13, 5, 6, 7};
+		generateCode("heap", "Test", true, arr);
 	}
 }

@@ -84,7 +84,7 @@ public class MessageService {
 				else if(options[1].contentEquals("sort")) {
 					if(options[2].contentEquals("graph"))
 						response = "We can't sort a graph. Would you like to search it or find a path?";
-					else sort();
+					else sort(true);
 				}
 				else if(options[2].contentEquals("array")) response = "We can't find a path on an array. Would you like to search or sort?";
 				else if(options[1].contentEquals("path dijkstra")) {
@@ -233,11 +233,18 @@ public class MessageService {
 	
 	private void search(String input) {
 		String needSort = null;
+		Object[][] copy = new Object[0][0];
 		if(!sorted) {
 			sorted = MyUtilities.checkSorted(data[0]);
 			if(!sorted) {
 				this.messages.add("Looks like the array isn't sorted, we should do that to make the search more efficient.");
-				needSort = sort();
+				copy = new Object[data.length][data[0].length];
+				for(int i=0; i<data.length; i++) {
+					for(int j=0; j<data[0].length; j++) {
+						copy[i][j] = data[i][j];
+					}
+				}
+				needSort = sort(false);
 			}
 		}
 		
@@ -255,13 +262,15 @@ public class MessageService {
 					this.messages.add("Because your array is so large, I recommend an Exponential Search.");
 					pos = SearchAlgorithms.exponentialTextSearch(text, text.length, input);
 					className = "ExponentialTextSearch";
-					export = ArraySearchExport.generateCode("exponential", className, false, needSort, text, input);
+					if(needSort != null) export = ArraySearchExport.generateCode("exponential", className, false, needSort, text, input);
+					else export = ArraySearchExport.generateCode("exponential", className, false, needSort, copy, input);
 				}
 				else {
 					this.messages.add("Your array isn't very big, so I recommend a Binary Search.");
 					pos = SearchAlgorithms.binaryTextSearch(text, 0, text.length-1, input);
 					className = "BinaryTextSearch";
-					export = ArraySearchExport.generateCode("binary", className, false, needSort, text, input);
+					if(needSort != null) export = ArraySearchExport.generateCode("binary", className, false, needSort, text, input);
+					else export = ArraySearchExport.generateCode("binary", className, false, needSort, copy, input);
 				}
 			}
 			else { //number array
@@ -283,13 +292,15 @@ public class MessageService {
 					this.messages.add("Because your array is so large, I recommend an Exponential Search.");
 					pos = SearchAlgorithms.exponentialNumberSearch(numbers, numbers.length, target);
 					className = "ExponentialNumSearch";
-					export = ArraySearchExport.generateCode("exponential", className, true, needSort, data[0], target);
+					if(needSort != null) export = ArraySearchExport.generateCode("exponential", className, true, needSort, data[0], target);
+					else export = ArraySearchExport.generateCode("exponential", className, true, needSort, copy, target);
 				}
 				else {
 					this.messages.add("Your array isn't very big, so I recommend a Binary Search.");
 					pos = SearchAlgorithms.binaryNumberSearch(numbers, 0, numbers.length-1, target);
 					className = "BinaryNumSearch";
-					export = ArraySearchExport.generateCode("binary", className, true, needSort, data[0], target);
+					if(needSort != null) export = ArraySearchExport.generateCode("binary", className, true, needSort, data[0], target);
+					else export = ArraySearchExport.generateCode("binary", className, true, needSort, copy, target);
 				}
 			}
 			
@@ -396,31 +407,38 @@ public class MessageService {
 		}
 	}
 	
-	private String sort() {
+	private String sort(boolean generate) {
 		try {
 			if(data.length == 1) {
-				String s;
+				String s, type;
+				boolean num;
 				double invRate = MyUtilities.countInversions(data[0]);
+				if(num = data[0][0] instanceof String) type="String";
+				else type="Num";
 				
 				if(data[0].length <= 10) {
 					this.messages.add("Your array isn't very big, so I recommend an Insertion Sort.");
-					SortAlgorithms.insertionSort(data[0]);
 					s = "insertion";
+					if(generate) ArraySortExport.generateCode(s, "Insertion"+type+"Sort", num, data[0]);
+					SortAlgorithms.insertionSort(data[0]);
 				}
 				else if(MyUtilities.isHeap(data[0], 0, data[0].length)) {
 					this.messages.add("Looks like your array is already in max-heap form, I recommend a Heap Sort.");
-					SortAlgorithms.heapSort(data[0]);
 					s = "heap";
+					if(generate) ArraySortExport.generateCode(s, "Heap"+type+"Sort", num, data[0]);
+					SortAlgorithms.heapSort(data[0]);
 				}
 				else if(invRate <= 5) {
 					this.messages.add("Your array contains only " + dec.format(invRate) + "% inversions, so I recommend an Insertion Sort.");
-					SortAlgorithms.insertionSort(data[0]);
 					s = "insertion";
+					if(generate) ArraySortExport.generateCode(s, "Insertion"+type+"Sort", num, data[0]);
+					SortAlgorithms.insertionSort(data[0]);
 				}
 				else {
 					this.messages.add("Your array doesn't appear to be mostly sorted, so Quick Sort is the best choice.");
-					SortAlgorithms.quickSort(data[0], 0, data[0].length-1);
 					s = "quick";
+					if(generate) ArraySortExport.generateCode(s, "Quick"+type+"Sort", num, data[0]);
+					SortAlgorithms.quickSort(data[0], 0, data[0].length-1);
 				}
 				
 				this.messages.add("Your sorted array:");
