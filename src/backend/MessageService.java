@@ -234,7 +234,7 @@ public class MessageService {
 	private void search(String input) {
 		String needSort = null;
 		Object[][] copy = new Object[0][0];
-		if(!sorted) {
+		if(data.length==1 && !sorted) {
 			sorted = MyUtilities.checkSorted(data[0]);
 			if(!sorted) {
 				this.messages.add("Looks like the array isn't sorted, we should do that to make the search more efficient.");
@@ -251,7 +251,7 @@ public class MessageService {
 		if(data.length == 1) { //if it is an array
 			int pos = -1;
 			boolean export = false;
-			String className;
+			String[] className = new String[1];
 			if(data[0][0] instanceof String) { //string array
 				String[] text = new String[data[0].length];
 				for(int i=0; i<data[0].length; i++) {
@@ -261,16 +261,16 @@ public class MessageService {
 				if(text.length > 100) {
 					this.messages.add("Because your array is so large, I recommend an Exponential Search.");
 					pos = SearchAlgorithms.exponentialTextSearch(text, text.length, input);
-					className = "ExponentialTextSearch";
-					if(needSort != null) export = ArraySearchExport.generateCode("exponential", className, false, needSort, text, input);
-					else export = ArraySearchExport.generateCode("exponential", className, false, needSort, copy, input);
+					className[0] = "ExponentialTextSearch";
+					if(needSort == null) export = ArraySearchExport.generateCode("exponential", className, false, needSort, text, input);
+					else export = ArraySearchExport.generateCode("exponential", className, false, needSort, copy[0], input);
 				}
 				else {
 					this.messages.add("Your array isn't very big, so I recommend a Binary Search.");
 					pos = SearchAlgorithms.binaryTextSearch(text, 0, text.length-1, input);
-					className = "BinaryTextSearch";
-					if(needSort != null) export = ArraySearchExport.generateCode("binary", className, false, needSort, text, input);
-					else export = ArraySearchExport.generateCode("binary", className, false, needSort, copy, input);
+					className[0] = "BinaryTextSearch";
+					if(needSort == null) export = ArraySearchExport.generateCode("binary", className, false, needSort, text, input);
+					else export = ArraySearchExport.generateCode("binary", className, false, needSort, copy[0], input);
 				}
 			}
 			else { //number array
@@ -291,23 +291,23 @@ public class MessageService {
 				if(numbers.length > 100) {
 					this.messages.add("Because your array is so large, I recommend an Exponential Search.");
 					pos = SearchAlgorithms.exponentialNumberSearch(numbers, numbers.length, target);
-					className = "ExponentialNumSearch";
-					if(needSort != null) export = ArraySearchExport.generateCode("exponential", className, true, needSort, data[0], target);
-					else export = ArraySearchExport.generateCode("exponential", className, true, needSort, copy, target);
+					className[0] = "ExponentialNumSearch";
+					if(needSort == null) export = ArraySearchExport.generateCode("exponential", className, true, needSort, data[0], target);
+					else export = ArraySearchExport.generateCode("exponential", className, true, needSort, copy[0], target);
 				}
 				else {
 					this.messages.add("Your array isn't very big, so I recommend a Binary Search.");
 					pos = SearchAlgorithms.binaryNumberSearch(numbers, 0, numbers.length-1, target);
-					className = "BinaryNumSearch";
-					if(needSort != null) export = ArraySearchExport.generateCode("binary", className, true, needSort, data[0], target);
-					else export = ArraySearchExport.generateCode("binary", className, true, needSort, copy, target);
+					className[0] = "BinaryNumSearch";
+					if(needSort == null) export = ArraySearchExport.generateCode("binary", className, true, needSort, data[0], target);
+					else export = ArraySearchExport.generateCode("binary", className, true, needSort, copy[0], target);
 				}
 			}
 			
 			if(pos < 0) this.messages.add(input + " was not found in the array.");
 			else this.messages.add(input + " was found at position " + pos);
 			
-			if(export) this.messages.add("Code that performs your desired task was exported to the output package as "+className+".java");
+			if(export) this.messages.add("Code that performs your desired task was exported to the output package as "+className[0]+".java");
 			else this.messages.add("Code generation failed. Check console for details.");
 		}
 		else { //if it is a graph
@@ -316,7 +316,7 @@ public class MessageService {
 			ArrayList<Object> path = new ArrayList<Object>();
 			Graph g = new Graph(data.length);
 			
-			if(true) { //data[0][0] == null) {
+			if(data[0][0] == null) {
 				int target;
 				try {
 					target = Integer.parseInt(input)-1;
@@ -339,6 +339,25 @@ public class MessageService {
 				//path = SearchAlgorithms.BFS(0, g, d, target);
 				SearchAlgorithms.DFS(0, g, new boolean[g.getSize()], d, target, success, path);
 				input = "Node " + input;
+			}
+			else {
+				Object target;
+				if(data[0][0] instanceof Double) {
+					target = Double.parseDouble(input);
+				}
+				else if(data[0][0] instanceof Integer) {
+					target = Integer.parseInt(input);
+				}
+				else target = input;
+				
+				for(int i=1; i<data.length; i++) {
+					for(int j=0; j<data[1].length; j++) {
+						if((Integer)data[i][j] != 0)
+							g.addEdge(i-1, j);
+					}
+				}
+				
+				SearchAlgorithms.DFS(0, g, new boolean[g.getSize()], data[0], target, success, path);
 			}
 			
 			/*if(path.contentEquals("")) this.messages.add(input + " was not found in the graph.");
@@ -411,7 +430,8 @@ public class MessageService {
 		try {
 			if(data.length == 1) {
 				String s, type;
-				boolean num;
+				String[] className = new String[1];
+				boolean num, export=false;
 				double invRate = MyUtilities.countInversions(data[0]);
 				if(num = data[0][0] instanceof String) type="String";
 				else type="Num";
@@ -419,25 +439,29 @@ public class MessageService {
 				if(data[0].length <= 10) {
 					this.messages.add("Your array isn't very big, so I recommend an Insertion Sort.");
 					s = "insertion";
-					if(generate) ArraySortExport.generateCode(s, "Insertion"+type+"Sort", num, data[0]);
+					className[0] = "Insertion"+type+"Sort";
+					if(generate) export = ArraySortExport.generateCode(s, className, num, data[0]);
 					SortAlgorithms.insertionSort(data[0]);
 				}
 				else if(MyUtilities.isHeap(data[0], 0, data[0].length)) {
 					this.messages.add("Looks like your array is already in max-heap form, I recommend a Heap Sort.");
 					s = "heap";
-					if(generate) ArraySortExport.generateCode(s, "Heap"+type+"Sort", num, data[0]);
+					className[0] = "Heap"+type+"Sort";
+					if(generate) export = ArraySortExport.generateCode(s, className, num, data[0]);
 					SortAlgorithms.heapSort(data[0]);
 				}
 				else if(invRate <= 5) {
 					this.messages.add("Your array contains only " + dec.format(invRate) + "% inversions, so I recommend an Insertion Sort.");
 					s = "insertion";
-					if(generate) ArraySortExport.generateCode(s, "Insertion"+type+"Sort", num, data[0]);
+					className[0] = "Insertion"+type+"Sort";
+					if(generate) export = ArraySortExport.generateCode(s, className, num, data[0]);
 					SortAlgorithms.insertionSort(data[0]);
 				}
 				else {
 					this.messages.add("Your array doesn't appear to be mostly sorted, so Quick Sort is the best choice.");
 					s = "quick";
-					if(generate) ArraySortExport.generateCode(s, "Quick"+type+"Sort", num, data[0]);
+					className[0] = "Quick"+type+"Sort";
+					if(generate) export = ArraySortExport.generateCode(s, className, num, data[0]);
 					SortAlgorithms.quickSort(data[0], 0, data[0].length-1);
 				}
 				
@@ -445,6 +469,11 @@ public class MessageService {
 				String[] output = MyUtilities.printArr(data[0]).split("\n", 0);
 				for(int i=0; i<output.length; i++) {
 					this.messages.add(output[i]);
+				}
+				
+				if(generate) {
+					if(export) this.messages.add("Code that performs your desired task was exported to the output package as "+className[0]+".java");
+					else this.messages.add("Code generation failed. Check console for details.");
 				}
 				
 				sorted = true;
@@ -463,20 +492,10 @@ public class MessageService {
 	}
 	
 	public void setDataArray(Object[] d) {
-		/*data = new Object[1][d.length];
+		data = new Object[1][d.length];
 		
 		for(int i=0; i<d.length; i++) {
 			data[0][i] = d[i];
-		}*/
-		
-		//for testing
-		data = new Object[1][101];
-		for(int i=0; i<101; i++) {
-			if(i<10) {
-				if(i%2 == 0) data[0][i] = i+2;
-				else data[0][i] = i;
-			}
-			else data[0][i] = i+1;
 		}
 	}
 	
@@ -531,10 +550,10 @@ public class MessageService {
 	
 	private boolean optionsFull() {
 		if(options[2] != null) {
-			if(options[1] == null) {
+			if(options[1] == null && options[2].contentEquals("array")) {
 				return true;
 			}
-			else if(options[1].contentEquals("search") || options[1].contentEquals("sort") || options[1].contains("path")) {
+			else if(options[1]!=null && (options[1].contentEquals("search") || options[1].contentEquals("sort") || options[1].contains("path"))) {
 				if(options[2].contentEquals("array"))
 					return true;
 				else if(options[2].contentEquals("graph")) {

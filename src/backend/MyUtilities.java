@@ -93,9 +93,9 @@ public class MyUtilities {
 	
 	//check that an array is sorted
 	public static boolean checkSorted(Object[] arr) {
-		if(arr[0] instanceof Double) {
+		if(arr[0] instanceof Double || arr[0] instanceof Integer) {
 			for(int i=1; i<arr.length; i++) {
-				if((Double)arr[i] < (Double)arr[i-1])
+				if(Double.parseDouble(arr[i].toString()) < Double.parseDouble(arr[i-1].toString()))
 					return false;
 			}
 		}

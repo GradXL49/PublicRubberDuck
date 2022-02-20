@@ -116,7 +116,7 @@ public class SearchAlgorithms {
 		while(queue.size() != 0) {
 			s = queue.poll();
 			path += "node"+ (s+1) + " ";
-			if(data[s] == target) 
+			if(data[s].equals(target)) 
 				return path;
 			
 			Iterator<Integer> i = g.adj[s].listIterator();
@@ -139,7 +139,7 @@ public class SearchAlgorithms {
 	public static void DFS(int v, Graph g, boolean[] visited, Object[] data, Object target, boolean[] success, ArrayList<Object> path) {
 		visited[v] = true;
 		path.add("node"+(v+1));
-		if(data[v] == target) success[0] = true;
+		if(data[v].equals(target)) success[0] = true;
 		
 		Iterator<Integer> i = g.adj[v].listIterator();
 		while(i.hasNext()) {

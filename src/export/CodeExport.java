@@ -57,9 +57,14 @@ abstract class CodeExport {
 			
 			if(target != null) {
 				String t;
-				if(num) t = target.toString();
-				else t = '"'+target.toString()+'"';
-				f.append("\tstatic "+type+" target = "+t+";\n");
+				if(num) {
+					t = target.toString();
+					f.append("\tstatic double target = "+t+";\n");
+				}
+				else {
+					t = '"'+target.toString()+'"';
+					f.append("\tstatic String target = "+t+";\n");
+				}
 			}
 			
 			f.append("\n");
@@ -67,5 +72,55 @@ abstract class CodeExport {
 		catch(Exception e) {
 			throw e;
 		}
+	}
+	
+	//generate static variables for graph program
+	protected static void generateGraphVariables(FileWriter f, boolean num, Object[][] graph, String type, Object target) throws Exception {
+		try {
+			f.append("\t//variables\n"
+					+"\tstatic Object[][] graph = "+graphString(graph, num)+";\n");
+			
+			if(target != null) {
+				if(type.contentEquals("String")) f.append("\tstatic String target = \""+target.toString()+"\";\n");
+				else f.append("\tstatic "+type+" target = "+target.toString()+";\n");
+			}
+			
+			f.append("\n");
+		}
+		catch(Exception e) {
+			throw e;
+		}
+	}
+	
+	private static String graphString(Object[][] graph, boolean num) {
+		String out = "{{";
+		
+		if(graph[0][0] == null) {
+			for(int j=0; j<graph[0].length; j++) {
+				out += "null";
+				if(j < graph[0].length-1) out += ",";
+			}
+		}
+		else {
+			for(int j=0; j<graph[0].length; j++) {
+				if(!num) out += '"'+graph[0][j].toString()+'"';
+				else out += graph[0][j].toString();
+				if(j < graph[0].length-1) out += ",";
+			}
+		}
+		out += "},";
+		
+		for(int i=1; i<graph.length; i++) {
+			out += "{";
+			for(int j=0; j<graph[i].length; j++) {
+				out += graph[i][j].toString();
+				if(j < graph[i].length-1) out += ",";
+			}
+			out += "}";
+			if(i < graph.length-1) out += ",";
+		}
+		
+		out += "}";
+		return out;
 	}
 }

@@ -35,15 +35,22 @@ public class ArraySearchExport extends CodeExport {
 						+"\t\tSystem.out.print('\\n');\n\n");
 			}
 			
-			f.append("\t\tSystem.out.println(\"Searching for: \"+target);\n\n"
-					+"\t\tint result = binarySearch(arr, 0, arr.length-1, target);\n\n"
-					+"\t\tif(result > -1) System.out.println(target+\" was found at position \"+result);\n"
+			f.append("\t\tSystem.out.println(\"Searching for: \"+target);\n\n");
+			
+			if(type.contentEquals("int"))
+				f.append("\t\tint result = binarySearch(arr, 0, arr.length-1, (int)target);\n\n");
+			else
+				f.append("\t\tint result = binarySearch(arr, 0, arr.length-1, target);\n\n");
+			
+			f.append("\t\tif(result > -1) System.out.println(target+\" was found at position \"+result);\n"
 					+"\t\telse System.out.println(target+\" was not found in the array\");\n\n"
 					+"\t}\n\n");
 			
-			switch(needSort) {
-			case "insertion": ArraySortExport.generateInsertion(f, num, type); break;
-			case "quick": ArraySortExport.generateQuick(f, num, type); break;
+			if(needSort != null) {
+				switch(needSort) {
+				case "insertion": ArraySortExport.generateInsertion(f, num, type); break;
+				case "quick": ArraySortExport.generateQuick(f, num, type); break;
+				}
 			}
 			
 			generateBinary(f, num, type);
@@ -51,7 +58,7 @@ public class ArraySearchExport extends CodeExport {
 			f.append("}\n");
 		}
 		catch(Exception e) {
-			
+			throw e;
 		}
 	}
 	
@@ -144,15 +151,22 @@ public class ArraySearchExport extends CodeExport {
 						+"\t\tSystem.out.print('\\n');\n\n");
 			}
 			
-			f.append("\t\tSystem.out.println(\"Searching for: \"+target);\n\n"
-					+"\t\tint result = exponentialSearch(arr, arr.length, target);\n\n"
-					+"\t\tif(result > -1) System.out.println(target+\" was found at position \"+result);\n"
+			f.append("\t\tSystem.out.println(\"Searching for: \"+target);\n\n");
+			
+			if(type.contentEquals("int"))
+				f.append("\t\tint result = exponentialSearch(arr, arr.length, (int)target);\n\n");
+			else
+				f.append("\t\tint result = exponentialSearch(arr, arr.length, target);\n\n");
+					
+			f.append("\t\tif(result > -1) System.out.println(target+\" was found at position \"+result);\n"
 					+"\t\telse System.out.println(target+\" was not found in the array\");\n\n"
 					+"\t}\n\n");
 			
+			if(needSort != null) {
 			switch(needSort) {
-			case "insertion": ArraySortExport.generateInsertion(f, num, type); break;
-			case "quick": ArraySortExport.generateQuick(f, num, type); break;
+				case "insertion": ArraySortExport.generateInsertion(f, num, type); break;
+				case "quick": ArraySortExport.generateQuick(f, num, type); break;
+				}
 			}
 			
 			generateBinary(f, num, type);
@@ -225,25 +239,28 @@ public class ArraySearchExport extends CodeExport {
 	}
 	
 	//main
-	public static boolean generateCode(String type, String className, boolean num, String needSort, Object[] arr, Object target) {
+	public static boolean generateCode(String type, String[] className, boolean num, String needSort, Object[] arr, Object target) {
 		try {
-			String path = new File("").getCanonicalPath() + "\\src\\output\\"+className+".java";
-			System.out.println(path);
+			String name = className[0];
+			String path = new File("").getCanonicalPath() + "\\src\\output\\";
 			
-			File f = new File(path);
-			if(!f.createNewFile()) {
-				System.out.println("Error: File already exists!");
-				return false;
+			File f = new File(path+name+".java");
+			int i = 0;
+			while(!f.createNewFile()) {
+				f = new File(path+name+i+".java");
+				className[0] = name+i;
+				i++;
 			}
 			FileWriter w = new FileWriter(f);
 			
 			switch(type) {
-			case "exponential": exponentialSearch(w, className, num, needSort, arr, target); break;
-			case "binary": binarySearch(w, className, num, needSort, arr, target); break;
+			case "exponential": exponentialSearch(w, className[0], num, needSort, arr, target); break;
+			case "binary": binarySearch(w, className[0], num, needSort, arr, target); break;
 			default: System.out.println("Error: Improper type passed."); w.close(); return false;
 			}
 			
 			w.close();
+			System.out.println(path+className[0]+".java");
 			
 			return true;
 		}
@@ -256,9 +273,10 @@ public class ArraySearchExport extends CodeExport {
 	//for testing
 	public static void main(String[] args) {
 		try {
-			Object[] arr = {0.22, 3.56, 8.7, 4.5};//{"a", "b", "c"};//{1, 2, 3, 4};//{0.22, 3.56, 8.7, 4.5};
-			String needSort = "quick";
-			generateCode("binary", "Test", true, needSort, arr, 3.56);
+			Object[] arr = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"};//{0.22, 3.56, 8.7, 4.5};//{1, 2, 3, 4};//{0.22, 3.56, 8.7, 4.5};
+			String needSort = null;
+			String[] className = {"Test"};
+			generateCode("binary", className, false, needSort, arr, 'e');
 		}
 		catch(Exception e) {
 			e.printStackTrace();

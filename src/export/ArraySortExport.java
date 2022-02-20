@@ -288,26 +288,29 @@ public class ArraySortExport extends CodeExport {
 	}
 	
 	//main
-	public static boolean generateCode(String type, String className, boolean num, Object[] arr) {
+	public static boolean generateCode(String type, String[] className, boolean num, Object[] arr) {
 		try {
-			String path = new File("").getCanonicalPath() + "\\src\\output\\"+className+".java";
-			System.out.println(path);
+			String name = className[0];
+			String path = new File("").getCanonicalPath() + "\\src\\output\\";
 			
-			File f = new File(path);
-			if(!f.createNewFile()) {
-				System.out.println("Error: File already exists!");
-				return false;
+			File f = new File(path+name+".java");
+			int i = 0;
+			while(!f.createNewFile()) {
+				f = new File(path+name+i+".java");
+				className[0] = name+i;
+				i++;
 			}
 			FileWriter w = new FileWriter(f);
 			
 			switch(type) {
-			case "insertion": insertionSort(w, className, num, arr); break;
-			case "quick": quickSort(w, className, num, arr); break;
-			case "heap": heapSort(w, className, num, arr); break;
+			case "insertion": insertionSort(w, className[0], num, arr); break;
+			case "quick": quickSort(w, className[0], num, arr); break;
+			case "heap": heapSort(w, className[0], num, arr); break;
 			default: System.out.println("Error: Improper type passed."); w.close(); return false;
 			}
 			
 			w.close();
+			System.out.println(path+className[0]+".java");
 			
 			return true;
 		}
@@ -320,6 +323,7 @@ public class ArraySortExport extends CodeExport {
 	//for testing
 	public static void main(String[] args) {
 		Object[] arr = {12, 11, 13, 5, 6, 7};
-		generateCode("heap", "Test", true, arr);
+		String[] className = {"Test"};
+		generateCode("heap", className, true, arr);
 	}
 }
