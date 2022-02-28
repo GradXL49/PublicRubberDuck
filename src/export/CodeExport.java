@@ -5,6 +5,7 @@
  */
 package export;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -81,7 +82,8 @@ abstract class CodeExport {
 					+"\tstatic Object[][] graph = "+graphString(graph, num)+";\n");
 			
 			if(target != null) {
-				if(type.contentEquals("String")) f.append("\tstatic String target = \""+target.toString()+"\";\n");
+				if(type.contentEquals("src")) f.append("\tstatic int src = "+target.toString()+";\n");
+				else if(type.contentEquals("String")) f.append("\tstatic String target = \""+target.toString()+"\";\n");
 				else f.append("\tstatic "+type+" target = "+target.toString()+";\n");
 			}
 			
@@ -122,5 +124,150 @@ abstract class CodeExport {
 		
 		out += "}";
 		return out;
+	}
+	
+	//generate both graph and node classes
+	protected static void generateDependencies(String path) throws Exception {
+		try {
+			generateGraph(path);
+			generateNode(path);
+		}
+		catch(Exception e) {
+			throw e;
+		}
+	}
+	
+	//generate graph class
+	private static void generateGraph(String path) throws Exception {
+		try {
+			File f = new File(path+"Graph.java");
+			if(!f.createNewFile()) {
+				System.out.println("Graph.java already exists.");
+			}
+			else {
+				FileWriter w = new FileWriter(f);
+				
+				w.append("/*\n"
+						+ " * Grady Landers\n"
+						+ " * Master's Project - Code name Rubber Duck\n"
+						+ " * graph class for back-end\n"
+						+ " * modified from https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/\n"
+						+ " */\n"
+						+ "\n"
+						+ "package output;\n"
+						+ "\n"
+						+ "import java.util.LinkedList;\n"
+						+ "\n"
+						+ "public class Graph {\n"
+						+ "	private int V; //No. of vertices\n"
+						+ "	public LinkedList<Integer> adj[]; //Adjacency Lists\n"
+						+ "	\n"
+						+ "	// Constructor\n"
+						+ "	@SuppressWarnings(\"unchecked\")\n"
+						+ "	public Graph(int v) {\n"
+						+ "		V = v;\n"
+						+ "		adj = new LinkedList[v];\n"
+						+ "		for(int i=0; i<v; i++)\n"
+						+ "			adj[i] = new LinkedList<Integer>();\n"
+						+ "	}\n"
+						+ "	\n"
+						+ "	// Function to add edge into the graph\n"
+						+ "	public void addEdge(int v, int w) {\n"
+						+ "		adj[v].add(w); //add w to v's list\n"
+						+ "	}\n"
+						+ "	\n"
+						+ "	// Function to get the size of the graph\n"
+						+ "	public int getSize() {\n"
+						+ "		return this.V;\n"
+						+ "	}\n"
+						+ "}\n"
+						+ "");
+				
+				w.close();
+			}
+		}
+		catch(Exception e) {
+			throw e;
+		}
+	}
+	
+	//generate node class
+	private static void generateNode(String path) throws Exception {
+		try {
+			File f = new File(path+"Node.java");
+			if(!f.createNewFile()) {
+				System.out.println("Node.java already exists.");
+			}
+			else {
+				FileWriter w = new FileWriter(f);
+				
+				w.append("/*\n"
+						+ " * Grady Landers\n"
+						+ " * Master's Project - Code name Rubber Duck\n"
+						+ " * Node class for A* Search implementation\n"
+						+ " * heavily inspired by https://stackabuse.com/graphs-in-java-a-star-algorithm/\n"
+						+ " */\n"
+						+ "\n"
+						+ "package output;\n"
+						+ "\n"
+						+ "import java.util.ArrayList;\n"
+						+ "\n"
+						+ "public class Node implements Comparable<Node> {\n"
+						+ "    // Id for readability of result purposes\n"
+						+ "    public String id;\n"
+						+ "\n"
+						+ "    // Parent in the path\n"
+						+ "    public Node parent = null;\n"
+						+ "\n"
+						+ "    public ArrayList<Edge> neighbors;\n"
+						+ "\n"
+						+ "    // Evaluation functions\n"
+						+ "    public double f = Double.MAX_VALUE;\n"
+						+ "    public double g = Double.MAX_VALUE;\n"
+						+ "    // Hardcoded heuristic\n"
+						+ "    public double h; \n"
+						+ "\n"
+						+ "    Node(String id){\n"
+						+ "          this.h = 0;\n"
+						+ "          this.id = id;\n"
+						+ "          this.neighbors = new ArrayList<>();\n"
+						+ "    }\n"
+						+ "    \n"
+						+ "    public void setH(double h){\n"
+						+ "    	  this.h = h;\n"
+						+ "    }\n"
+						+ "\n"
+						+ "    @Override\n"
+						+ "    public int compareTo(Node n) {\n"
+						+ "          return Double.compare(this.f, n.f);\n"
+						+ "    }\n"
+						+ "\n"
+						+ "    public static class Edge {\n"
+						+ "          Edge(int weight, Node node){\n"
+						+ "                this.weight = weight;\n"
+						+ "                this.node = node;\n"
+						+ "          }\n"
+						+ "\n"
+						+ "          public int weight;\n"
+						+ "          public Node node;\n"
+						+ "    }\n"
+						+ "\n"
+						+ "    public void addBranch(int weight, Node node){\n"
+						+ "          Edge newEdge = new Edge(weight, node);\n"
+						+ "          neighbors.add(newEdge);\n"
+						+ "    }\n"
+						+ "\n"
+						+ "    public double calculateHeuristic(Node target){\n"
+						+ "          return this.h;\n"
+						+ "    }\n"
+						+ "}\n"
+						+ "");
+				
+				w.close();
+			}
+		}
+		catch(Exception e) {
+			throw e;
+		}
 	}
 }
