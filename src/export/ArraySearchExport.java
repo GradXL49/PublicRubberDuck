@@ -108,7 +108,7 @@ public class ArraySearchExport extends CodeExport {
 			message += "array.";
 			generateHeader(f, message);
 			
-			String[] imports = {"java.util.*"};
+			String[] imports = {};
 			generateImports(f, imports, className);
 			
 			String type;
@@ -222,7 +222,7 @@ public class ArraySearchExport extends CodeExport {
 			if(needSort != null) message += " With "+needSort+" sort.";
 			generateHeader(f, message);
 			
-			String[] imports = {"java.util.*"};
+			String[] imports = {};
 			generateImports(f, imports, className);
 			
 			String type;

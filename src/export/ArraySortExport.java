@@ -182,7 +182,7 @@ public class ArraySortExport extends CodeExport {
 		message += "array.";
 		generateHeader(f, message);
 		
-		String[] imports = {"java.util.*"};
+		String[] imports = {};
 		generateImports(f, imports, className);
 		
 		String type;
@@ -275,7 +275,7 @@ public class ArraySortExport extends CodeExport {
 		message += "array.";
 		generateHeader(f, message);
 		
-		String[] imports = {"java.util.*"};
+		String[] imports = {};
 		generateImports(f, imports, className);
 		
 		String type;

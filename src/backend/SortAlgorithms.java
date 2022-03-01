@@ -14,19 +14,37 @@ public class SortAlgorithms {
 	public static void insertionSort(Object[] arr) {
 		if(arr[0] instanceof String)
 			insertionTextSort(arr, arr.length);
-		else insertionNumberSort(arr, arr.length);
+		else if(arr[0] instanceof Double)
+			insertionDoubleSort(arr, arr.length);
+		else insertionIntSort(arr, arr.length);
 	}
 	
-	private static void insertionNumberSort(Object[] arr, int n) {
+	private static void insertionDoubleSort(Object[] arr, int n) {
 		if(n <= 1)
 			return;
 		
-		insertionNumberSort(arr, n-1);
+		insertionDoubleSort(arr, n-1);
 		
 		double last = Double.parseDouble(arr[n-1].toString());
 		int j = n-2;
 		
 		while(j>=0 && Double.parseDouble(arr[j].toString())>last) {
+			arr[j+1] = arr[j];
+			j--;
+		}
+		arr[j+1] = last;
+	}
+	
+	private static void insertionIntSort(Object[] arr, int n) {
+		if(n <= 1)
+			return;
+		
+		insertionIntSort(arr, n-1);
+		
+		double last = (int)Double.parseDouble(arr[n-1].toString());
+		int j = n-2;
+		
+		while(j>=0 && (int)Double.parseDouble(arr[j].toString())>last) {
 			arr[j+1] = arr[j];
 			j--;
 		}
@@ -107,12 +125,12 @@ public class SortAlgorithms {
 	 * modified from https://www.geeksforgeeks.org/heap-sort/
 	 */
 	//utility
-	private static void heapify(Object arr[], int n, int i, boolean strings) {
+	private static void heapify(Object arr[], int n, int i, String type) {
 		int largest = i;
 		int l = 2*i + 1;
 		int r = 2*i + 2;
 		
-		if(strings) {
+		if(type.contentEquals("string")) {
 			if(l<n && arr[l].toString().compareTo(arr[largest].toString())>0) {
 				largest = l;
 			}
@@ -121,7 +139,7 @@ public class SortAlgorithms {
 				largest = r;
 			}
 		}
-		else {
+		else if(type.contentEquals("double")){
 			double ln = Double.parseDouble(arr[largest].toString());
 			
 			if(l<n && Double.parseDouble(arr[l].toString())>ln) {
@@ -133,23 +151,38 @@ public class SortAlgorithms {
 				largest = r;
 			}
 		}
+		else {
+			int ln = (int)Double.parseDouble(arr[largest].toString());
+			
+			if(l<n && Double.parseDouble(arr[l].toString())>ln) {
+				largest = l;
+				ln = (int)Double.parseDouble(arr[largest].toString());
+			}
+			
+			if(r<n && (int)Double.parseDouble(arr[r].toString())>ln) {
+				largest = r;
+			}
+		}
 		
 		if(largest != i) {
 			Object swap = arr[i];
 			arr[i] = arr[largest];
 			arr[largest] = swap;
 			
-			heapify(arr, n, largest, strings);
+			heapify(arr, n, largest, type);
 		}
 	}
 	
 	//algorithm
 	public static void heapSort(Object arr[]) {
 		int n = arr.length;
-		boolean strings = arr[0] instanceof String;
+		String type = "";
+		if(arr[0] instanceof String) type = "string";
+		else if(arr[0] instanceof Double) type = "double";
+		else type = "int";
 		
 		for(int i = n/2 - 1; i>=0; i--) {
-			heapify(arr, n, i, strings);
+			heapify(arr, n, i, type);
 		}
 		
 		for(int i=n-1; i>0; i--) {
@@ -157,7 +190,7 @@ public class SortAlgorithms {
 			arr[0] = arr[i];
 			arr[i] = temp;
 			
-			heapify(arr, i, 0, strings);
+			heapify(arr, i, 0, type);
 		}
 	}
 }
