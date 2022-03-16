@@ -233,6 +233,8 @@ public class MessageService {
 	
 	private void search(String input) {
 		String needSort = null;
+		String[] className = new String[1];
+		boolean num;
 		Object[][] copy = new Object[0][0];
 		if(data.length==1 && !sorted) {
 			sorted = MyUtilities.checkSorted(data[0]);
@@ -251,8 +253,8 @@ public class MessageService {
 		if(data.length == 1) { //if it is an array
 			int pos = -1;
 			boolean export = false;
-			String[] className = new String[1];
 			if(data[0][0] instanceof String) { //string array
+				num = false;
 				String[] text = new String[data[0].length];
 				for(int i=0; i<data[0].length; i++) {
 					text[i] = data[0][i].toString();
@@ -262,18 +264,19 @@ public class MessageService {
 					this.messages.add("Because your array is so large, I recommend an Exponential Search.");
 					pos = SearchAlgorithms.exponentialTextSearch(text, text.length, input);
 					className[0] = "ExponentialTextSearch";
-					if(needSort == null) export = ArraySearchExport.generateCode("exponential", className, false, needSort, text, input);
-					else export = ArraySearchExport.generateCode("exponential", className, false, needSort, copy[0], input);
+					if(needSort == null) export = ArraySearchExport.generateCode("exponential", className, num, needSort, text, input);
+					else export = ArraySearchExport.generateCode("exponential", className, num, needSort, copy[0], input);
 				}
 				else {
 					this.messages.add("Your array isn't very big, so I recommend a Binary Search.");
 					pos = SearchAlgorithms.binaryTextSearch(text, 0, text.length-1, input);
 					className[0] = "BinaryTextSearch";
-					if(needSort == null) export = ArraySearchExport.generateCode("binary", className, false, needSort, text, input);
-					else export = ArraySearchExport.generateCode("binary", className, false, needSort, copy[0], input);
+					if(needSort == null) export = ArraySearchExport.generateCode("binary", className, num, needSort, text, input);
+					else export = ArraySearchExport.generateCode("binary", className, num, needSort, copy[0], input);
 				}
 			}
 			else { //number array
+				num = true;
 				double target = 0;
 				try {
 					target = Double.parseDouble(input);
@@ -292,15 +295,15 @@ public class MessageService {
 					this.messages.add("Because your array is so large, I recommend an Exponential Search.");
 					pos = SearchAlgorithms.exponentialNumberSearch(numbers, numbers.length, target);
 					className[0] = "ExponentialNumSearch";
-					if(needSort == null) export = ArraySearchExport.generateCode("exponential", className, true, needSort, data[0], target);
-					else export = ArraySearchExport.generateCode("exponential", className, true, needSort, copy[0], target);
+					if(needSort == null) export = ArraySearchExport.generateCode("exponential", className, num, needSort, data[0], target);
+					else export = ArraySearchExport.generateCode("exponential", className, num, needSort, copy[0], target);
 				}
 				else {
 					this.messages.add("Your array isn't very big, so I recommend a Binary Search.");
 					pos = SearchAlgorithms.binaryNumberSearch(numbers, 0, numbers.length-1, target);
 					className[0] = "BinaryNumSearch";
-					if(needSort == null) export = ArraySearchExport.generateCode("binary", className, true, needSort, data[0], target);
-					else export = ArraySearchExport.generateCode("binary", className, true, needSort, copy[0], target);
+					if(needSort == null) export = ArraySearchExport.generateCode("binary", className, num, needSort, data[0], target);
+					else export = ArraySearchExport.generateCode("binary", className, num, needSort, copy[0], target);
 				}
 			}
 			
@@ -312,11 +315,13 @@ public class MessageService {
 		}
 		else { //if it is a graph
 			//String path = "";
+			num = true;
 			boolean[] success = {false};
 			ArrayList<Object> path = new ArrayList<Object>();
 			Graph g = new Graph(data.length);
 			
 			if(data[0][0] == null) {
+				className[0] = "NoDataDFS";
 				int target;
 				try {
 					target = Integer.parseInt(input)-1;
@@ -339,16 +344,26 @@ public class MessageService {
 				//path = SearchAlgorithms.BFS(0, g, d, target);
 				SearchAlgorithms.DFS(0, g, new boolean[g.getSize()], d, target, success, path);
 				input = "Node " + input;
+				
+				if(GraphExport.generateCode("search", className, num, data, target))
+					this.messages.add("Code that performs your desired task was exported to the output package as "+className[0]+".java");
+				else this.messages.add("Code generation failed. Check console for details.");
 			}
 			else {
 				Object target;
 				if(data[0][0] instanceof Double) {
 					target = Double.parseDouble(input);
+					className[0] = "DoubleDFS";
 				}
 				else if(data[0][0] instanceof Integer) {
 					target = Integer.parseInt(input);
+					className[0] = "IntDFS";
 				}
-				else target = input;
+				else {
+					target = input;
+					className[0] = "StringDFS";
+					num = false;
+				}
 				
 				for(int i=1; i<data.length; i++) {
 					for(int j=0; j<data[1].length; j++) {
@@ -358,6 +373,10 @@ public class MessageService {
 				}
 				
 				SearchAlgorithms.DFS(0, g, new boolean[g.getSize()], data[0], target, success, path);
+				
+				if(GraphExport.generateCode("search", className, num, data, target))
+					this.messages.add("Code that performs your desired task was exported to the output package as "+className[0]+".java");
+				else this.messages.add("Code generation failed. Check console for details.");
 			}
 			
 			/*if(path.contentEquals("")) this.messages.add(input + " was not found in the graph.");
@@ -374,6 +393,11 @@ public class MessageService {
 		try {
 			int src = Integer.parseInt(input)-1;
 			
+			String[] className = {"Dijkstra"};
+			boolean num = true;
+			if(data[0][0] != null && data[0][0] instanceof String)
+				num = false;
+			
 			int V = data[0].length;
 			int[][] graph = new int[V][V];
 			for(int i=1; i<data.length; i++) {
@@ -386,6 +410,10 @@ public class MessageService {
 			for(int i=0; i<output.length; i++) {
 				this.messages.add(output[i]);
 			}
+			
+			if(GraphExport.generateCode("dijkstra", className, num, data, src+1))
+				this.messages.add("Code that performs your desired task was exported to the output package as "+className[0]+".java");
+			else this.messages.add("Code generation failed. Check console for details.");
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -397,6 +425,11 @@ public class MessageService {
 	private void aStar(String input) {
 		try {
 			int target = Integer.parseInt(input)-1;
+			
+			String[] className = {"AStar"};
+			boolean num = true;
+			if(data[0][0] != null && data[0][0] instanceof String)
+				num = false;
 			
 			ArrayList<Node> graph = new ArrayList<Node>();
 			String id = "";
@@ -419,6 +452,10 @@ public class MessageService {
 			graph.get(0).g = 0;
 			String path = SearchAlgorithms.aStar(graph.get(0), graph.get(target));
 			this.messages.add(path);
+			
+			if(GraphExport.generateCode("aStar", className, num, data, target+1))
+				this.messages.add("Code that performs your desired task was exported to the output package as "+className[0]+".java");
+			else this.messages.add("Code generation failed. Check console for details.");
 		}
 		catch(Exception e) {
 			e.printStackTrace();

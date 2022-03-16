@@ -171,8 +171,10 @@ public class SearchAlgorithms {
 	//utility for output
 	private static String printSolution(int[] dist, int V) {
         String out = "Vertex        Distance from Source\n";
-        for(int i=0; i<V; i++)
-            out += "Node" + (i+1) + "        " + dist[i] + "\n";
+        for(int i=0; i<V; i++) {
+        	if(dist[i] == Integer.MAX_VALUE) out += "Node" + (i+1) + "        " + "No path" + "\n";
+        	else out += "Node" + (i+1) + "        " + dist[i] + "\n";
+        }
         
         return out;
     }
