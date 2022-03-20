@@ -18,8 +18,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollBar;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JList;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -41,6 +43,9 @@ public class MainWindow {
 	private JMenuItem mntmExit;
 	private JScrollPane spConvo;
 	private JMenuItem mntmRestart;
+	private JMenuItem mntmSave;
+	private JMenuItem mntmLoad;
+	private ArrayList<String> inputs;
 
 	/**
 	 * Launch the application.
@@ -63,6 +68,7 @@ public class MainWindow {
 	 */
 	public MainWindow(MessageService m) {
 		this.messages = m;
+		this.inputs = new ArrayList<String>();
 		this.initialize();
 	}
 
@@ -136,6 +142,12 @@ public class MainWindow {
 		
 		mntmRestart = new JMenuItem("Restart");
 		mnFile.add(mntmRestart);
+		
+		mntmSave = new JMenuItem("Save");
+		mnFile.add(mntmSave);
+		
+		mntmLoad = new JMenuItem("Load");
+		mnFile.add(mntmLoad);
 	}
 	
 	private void initializeActions() {
@@ -151,8 +163,46 @@ public class MainWindow {
 		mntmRestart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				lmMessages.clear();
+				inputs.clear();
 				sendMessage("restart");
+				lmMessages.removeElement("You: restart");
 				taInput.setText("");
+			}
+		});
+		
+		//save
+		mntmSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String path;
+				JFileChooser fc = new JFileChooser();
+				fc.setFileFilter(new FileNameExtensionFilter("Rubber Duck Conversation (.rdc)", "rdc"));
+				fc.setCurrentDirectory(null);
+				int val = fc.showSaveDialog(null);
+				if(val == JFileChooser.APPROVE_OPTION) {
+					path = fc.getSelectedFile().toString();
+					if(!path.endsWith(".rdc"))
+						path += ".rdc";
+					messages.saveConvo(path, inputs);
+				}
+				displayNewMessages();
+			}
+		});
+		
+		//load
+		mntmLoad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String path;
+				JFileChooser fc = new JFileChooser();
+				fc.setFileFilter(new FileNameExtensionFilter("Rubber Duck Conversation (.rdc)", "rdc"));
+				fc.setCurrentDirectory(null);
+				int val = fc.showOpenDialog(null);
+				if(val == JFileChooser.APPROVE_OPTION) {
+					path = fc.getSelectedFile().toString();
+					mntmRestart.doClick();
+					for(String m : messages.loadConvo(path)) {
+						sendMessage(m);
+					}
+				}
 			}
 		});
 		
@@ -168,7 +218,6 @@ public class MainWindow {
 					mntmExit.doClick();
 				}
 				
-				lmMessages.addElement("You: "+message);
 				sendMessage(message);
 				taInput.setText("");
 				
@@ -197,7 +246,9 @@ public class MainWindow {
 	}
 	
 	private void sendMessage(String message) {
-		this.messages.receiveMessage(message);
-		this.displayNewMessages();
+		inputs.add(message);
+		lmMessages.addElement("You: "+message);
+		messages.receiveMessage(message);
+		displayNewMessages();
 	}
 }

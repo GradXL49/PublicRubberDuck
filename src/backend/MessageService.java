@@ -6,6 +6,7 @@
 
 package backend;
 
+import java.io.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -54,22 +55,14 @@ public class MessageService {
 	public void receiveMessage(String message) {
 		String response = this.processMessage(message);
 		
-		if(response.contains("Okay, let's make an array!")) {
-			this.messages.add(response);
-			makeArray();
-		}
-		else if(response.contentEquals("Okay, let's make an unweighted graph.")) {
-			if(options[3] != null)
-				makeGraph(options[3].contentEquals("weighted"));
-		}
-		/* else if(response.contentEquals("Okay, let's sort it!")) {
-			sort();
-		}*/
-		
 		if(optionsFull()) {
 			if(!this.dataMade) {
 				if(options[2].contentEquals("array")) makeArray();
 				else makeGraph(options[3].contentEquals("weighted"));
+			}
+			else if(options[0].contentEquals("Okay, let's make an array! ") || options[0].contentEquals("Okay, let's make a graph. ")) {
+				this.messages.add("Your data structure is already created. ");
+				return;
 			}
 			
 			if(this.dataMade) {
@@ -110,6 +103,7 @@ public class MessageService {
 			}
 			dataMade = false;
 			sorted = false;
+			agent = new AgentModel();
 			return "What can I help you with today?";
 		}
 		
@@ -123,63 +117,6 @@ public class MessageService {
 		}
 		agent.getResponse(message, options, input);
 		return options[0];
-		
-		/* THIS IS THE ORIGINAL HANDMADE AI USED FOR INITIAL DEVELOPMENT/TESTING
-		message = message.toLowerCase();
-		String response = "";
-		
-		if(message.contains("restart")) return "What kind of data structure are we working with today?";
-		
-		int end = this.messages.size()-2;
-		String question = this.messages.get(end+1);
-		while(!question.contains("?")) {
-			question = this.messages.get(end);
-			end--;
-			if(end < 0) {
-				System.out.println("MessageService: ERROR. Could not find last question asked.");
-				return "MessageService: ERROR. Could not find last question asked.";
-			}
-		}
-		
-		if(question.contentEquals("What kind of data structure are we working with today?")) {
-			if(message.contains("array")) response = "Okay, let's make an array!";
-			else if(message.contains("graph")) response = "A graph, okay, do you want to make it a weighted graph?";
-			else response = "I'm sorry, I don't understand. Enter 'array' to make an array, or 'graph' to make a graph.";
-		}
-		else if(question.contentEquals("A graph, okay, do you want to make it a weighted graph?")) {
-			if(message.contains("no") || message.contains("un")) response = "Okay, let's make an unweighted graph!";
-			else if(message.contains("yes") || message.contains("weighted")) response = "Okay, let's make a weighted graph!";
-			else response = "I'm sorry, I don't understand. Enter 'yes' to make a weighted graph, or 'no' to make an unweighted graph.";
-		}
-		else if(question.contentEquals("Would you like to search, or sort your array?")) {
-			if(message.contains("search")) response = "Okay, let's do a search! Without entering unnecesarry text, what are you looking for?";
-			else if(message.contains("sort")) response = "Okay, let's sort it!";
-			else response = "I'm sorry, I don't understand. Enter 'search' to perform a search, or 'sort' to sort it.";
-		}
-		else if(question.contentEquals("Would you like to search, or find a path on your graph?")) {
-			if(message.contains("search")) response = "Okay, let's do a search! Without entering unnecesarry text, what are you looking for?";
-			else if(message.contains("path")) response = "Do you want all shortest paths or one specific path?";
-		}
-		else if(question.contentEquals("Okay, let's do a search! Without entering unnecesarry text, what are you looking for?")) {
-			search(message);
-		}
-		else if(question.contentEquals("Do you want all shortest paths or one specific path?")) {
-			if(message.contains("all") || message.contains("shortest")) response = "Okay, let's find all shortest paths. Which is the source node?";
-			else if(message.contains("one") || message.contains("specific")) response = "Okay, let's find the path. Which is the destination node?";
-		}
-		else if(question.contains("Okay, let's find all shortest paths.")) {
-			shortestPath(message);
-		}
-		else if(question.contains("Okay, let's find the path.")) {
-			astar(message);
-		}
-		else {
-			System.out.println("MessageService: ERROR. Could not find last question asked. Last said: "+question);
-			response = "MessageService: ERROR. Could not find last question asked. Last said: "+question;
-		}
-		
-		return response;
-		*/
 	}
 	
 	private void makeArray() {
@@ -190,13 +127,7 @@ public class MessageService {
 			frame.setVisible(true);
 			
 			if(success[0]) {
-				this.dataMade = true;
-				this.messages.add("Your array: ");
-				String[] output = MyUtilities.printArr(data[0]).split("\n", 0);
-				for(int i=0; i<output.length; i++) {
-					this.messages.add(output[i]);
-				}
-				//this.messages.add("Would you like to search, or sort your array?");
+				arrayMade();
 			}
 			else {
 				this.messages.add("Hmmm... Looks like you need more time to decide.");
@@ -207,6 +138,15 @@ public class MessageService {
 		}
 	}
 	
+	private void arrayMade() {
+		this.dataMade = true;
+		this.messages.add("Your array: ");
+		String[] output = MyUtilities.printArr(data[0]).split("\n", 0);
+		for(int i=0; i<output.length; i++) {
+			this.messages.add(output[i]);
+		}
+	}
+	
 	private void makeGraph(boolean weighted) {
 		try {
 			boolean[] success = {false, weighted};
@@ -214,13 +154,7 @@ public class MessageService {
 			frame.setVisible(true);
 			
 			if(success[0]) {
-				this.dataMade = true;
-				this.messages.add("Your graph: ");
-				String[] output = MyUtilities.printGraph(data).split("\n", 0);
-				for(int i=0; i<output.length; i++) {
-					this.messages.add(output[i]);
-				}
-				//this.messages.add("Would you like to search, or find a path on your graph?");
+				graphMade();
 			}
 			else {
 				this.messages.add("Hmmm... Looks like you need more time to decide.");
@@ -228,6 +162,15 @@ public class MessageService {
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void graphMade() {
+		this.dataMade = true;
+		this.messages.add("Your graph: ");
+		String[] output = MyUtilities.printGraph(data).split("\n", 0);
+		for(int i=0; i<output.length; i++) {
+			this.messages.add(output[i]);
 		}
 	}
 	
@@ -587,7 +530,7 @@ public class MessageService {
 	
 	private boolean optionsFull() {
 		if(options[2] != null) {
-			if(options[1] == null && options[2].contentEquals("array")) {
+			if(options[1] == null && (options[2].contentEquals("array") || options[2].contentEquals("graph"))) {
 				return true;
 			}
 			else if(options[1]!=null && (options[1].contentEquals("search") || options[1].contentEquals("sort") || options[1].contains("path"))) {
@@ -615,5 +558,90 @@ public class MessageService {
 			}
 		}
 		else return false;
+	}
+	
+	//SAVE AND LOAD FUNCTIONALITY
+	//save current conversation
+	public void saveConvo(String path, ArrayList<String> inputs) {
+		try {
+			//initialize file writer
+			FileWriter fw = new FileWriter(new File(path));
+			
+			//write data structure
+			if(dataMade) {
+				String dt = "string";
+				if(data[0][0] instanceof Integer) dt = "int";
+				else if(data[0][0] instanceof Double) dt = "double";
+				fw.append(dt + "\n");
+				fw.append(data.length+"\n");
+				fw.append(MyUtilities.dataToString(data));
+			}
+			else fw.append("null\n");
+			
+			//write user input
+			for(int i=0; i<inputs.size(); i++) {
+				fw.append(inputs.get(i) + "\n");
+			}
+			
+			fw.close();
+			this.messages.add("Conversation saved.");
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			this.messages.add("An error occurred saving the conversation.");
+		}
+	}
+	
+	//load an old conversation
+	public ArrayList<String> loadConvo(String path) {
+		try {
+			//initialize file reader and other stuff
+			ArrayList<String> inputs = new ArrayList<String>();
+			BufferedReader fr = new BufferedReader(new FileReader(path));
+			
+			//read data structure
+			String dt = fr.readLine();
+			String[] temp;
+			int length = Integer.parseInt(fr.readLine());
+			
+			data = new Object[length][];
+			for(int i=0; i<length; i++) {
+				temp = fr.readLine().split(",");
+				data[i] = new Object[temp.length];
+				for(int j=0; j<temp.length; j++) {
+					if(i > 0) data[i][j] = Integer.parseInt(temp[j]);
+					else {
+						switch(dt) {
+						case "string": data[i][j] = temp[j]; break;
+						case "int": data[i][j] = Integer.parseInt(temp[j]); break;
+						case "double": data[i][j] = Double.parseDouble(temp[j]); break;
+						}
+					}
+				}
+			}
+			
+			if(data.length > 1) graphMade();
+			else arrayMade();
+			
+			//read inputs and return
+			String line = fr.readLine();
+			while(line != null) {
+				inputs.add(line);
+				line = fr.readLine();
+			}
+			
+			//for testing
+			System.out.println(MyUtilities.dataToString(data));
+			for(int i=0; i<inputs.size(); i++)
+				System.out.println(inputs.get(i));
+			
+			fr.close();
+			return inputs;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			this.messages.add("An error occurred loading the conversation.");
+			return null;
+		}
 	}
 }

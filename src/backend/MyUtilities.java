@@ -91,6 +91,21 @@ public class MyUtilities {
 		return out;
 	}
 	
+	//print data in csv format
+	public static String dataToString(Object[][] graph) {
+		String out = "";
+		
+		for(int i=0; i<graph.length; i++) {
+			for(int j=0; j<graph[0].length; j++) {
+				out += graph[i][j];
+				if(j < graph[0].length-1) out += ",";
+			}
+			out += "\n";
+		}
+		
+		return out;
+	}
+	
 	//check that an array is sorted
 	public static boolean checkSorted(Object[] arr) {
 		if(arr[0] instanceof Double || arr[0] instanceof Integer) {

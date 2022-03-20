@@ -226,7 +226,6 @@ public class AgentModel {
 				}
 				else if(category.contains("inquisition")) {
 					extractEntities(entities[i], tokens, response);
-					//System.out.println("Response array:\n" + MyUtilities.printArr(response));
 					
 					switch(category) {
 					case "operation-inquisition":
