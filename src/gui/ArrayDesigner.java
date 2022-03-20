@@ -21,9 +21,11 @@ import javax.swing.JOptionPane;
 
 import java.awt.Font;
 import java.awt.event.WindowEvent;
+import java.io.*;
 
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingUtilities;
 import javax.swing.DefaultComboBoxModel;
@@ -37,9 +39,13 @@ import javax.swing.JTable;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.event.ChangeEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JMenu;
 
 public class ArrayDesigner extends JDialog {
 
@@ -52,6 +58,8 @@ public class ArrayDesigner extends JDialog {
 	private DefaultTableModel tmData;
 	private JSpinner spinnerSize;
 	private JComboBox<String> cbDataType;
+	private JMenuItem mntmSave;
+	private JMenuItem mntmLoad;
 
 	/**
 	 * Launch the application.
@@ -82,6 +90,18 @@ public class ArrayDesigner extends JDialog {
 		setTitle("Make Your Array");
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
+		
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		JMenu mnFile = new JMenu("File");
+		menuBar.add(mnFile);
+		
+		mntmSave = new JMenuItem("Save");
+		mnFile.add(mntmSave);
+		
+		mntmLoad = new JMenuItem("Load");
+		mnFile.add(mntmLoad);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -143,6 +163,56 @@ public class ArrayDesigner extends JDialog {
 	}
 	
 	private void initializeActions(boolean[] success, MessageService data) {
+		//FILE MENU
+		//save
+		mntmSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String message = "No valid array has been entered.";
+				
+				if(!validData()) {
+					JOptionPane.showMessageDialog(null, message);
+					return;
+				}
+				
+				String path;
+				JFileChooser fc = new JFileChooser();
+				fc.setFileFilter(new FileNameExtensionFilter("Rubber Duck Data (.rdd)", "rdd"));
+				fc.setCurrentDirectory(null);
+				int val = fc.showSaveDialog(null);
+				if(val == JFileChooser.APPROVE_OPTION) {
+					path = fc.getSelectedFile().toString();
+					if(!path.endsWith(".rdd"))
+						path += ".rdd";
+					
+					if(saveData(path)) message = "Data saved successfully.";
+					else message = "There was a problem saving the data.\nCheck the console for more info.";
+					
+					JOptionPane.showMessageDialog(null, message);
+				}
+			}
+		});
+		
+		//load
+		mntmLoad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(validData()) {
+					if(JOptionPane.showConfirmDialog(null, "There is a valid array present. Are you sure you want to overwrite it?") == JOptionPane.CANCEL_OPTION);
+						return;
+				}
+				
+				String path;
+				JFileChooser fc = new JFileChooser();
+				fc.setFileFilter(new FileNameExtensionFilter("Rubber Duck Data (.rdd)", "rdd"));
+				fc.setCurrentDirectory(null);
+				int val = fc.showOpenDialog(null);
+				if(val == JFileChooser.APPROVE_OPTION) {
+					path = fc.getSelectedFile().toString();
+					
+					if(!loadData(path)) JOptionPane.showMessageDialog(null, "There was a problem loading the data.\nCheck the console for more info.");
+				}
+			}
+		});
+		
 		//handle close button
 		SwingUtilities.getWindowAncestor(contentPane).addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
@@ -225,6 +295,13 @@ public class ArrayDesigner extends JDialog {
 		}
 	}
 	
+	private void updateDataTable(Object[] data) {
+		tmData.setRowCount(0);
+		for(int i=0; i<data.length; i++) {
+			tmData.addRow(new Object[] {"array["+(i)+"]", data[i].toString()});
+		}
+	}
+	
 	private void resetDataTable() {
 		for(int i=0; i<tmData.getRowCount(); i++)
 			tmData.setValueAt(null, i, 1);
@@ -257,6 +334,58 @@ public class ArrayDesigner extends JDialog {
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	private boolean saveData(String path) {
+		try {
+			//initialize file writer
+			FileWriter fw = new FileWriter(new File(path));
+			
+			//write data structure
+			fw.append(cbDataType.getSelectedItem().toString() + "\n");
+			for(int i=0; i<tmData.getRowCount(); i++) {
+				fw.append(tmData.getValueAt(i, 1).toString());
+				if(i < tmData.getRowCount()-1) fw.append(","); 
+			}
+			
+			//return
+			fw.close();
+			return true;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	private boolean loadData(String path) {
+		try {
+			//initialize file reader
+			BufferedReader fr = new BufferedReader(new FileReader(path));
+			
+			//read data structure
+			cbDataType.setSelectedItem(fr.readLine());
+			String[] temp = fr.readLine().split(",");
+			fr.close();
+			
+			updateDataTable(temp);
+			spinnerSize.setValue(temp.length);
+			
+			return true;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	private boolean validData() {
+		if((Integer)spinnerSize.getValue() < 1) return false;
 		
+		for(int i=0; i<tmData.getRowCount(); i++) {
+			if(tmData.getValueAt(i, 1) == null) return false;
+		}
+		
+		return true;
 	}
 }
