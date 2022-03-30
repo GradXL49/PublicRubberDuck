@@ -176,13 +176,13 @@ public class ArrayDesigner extends JDialog {
 				
 				String path;
 				JFileChooser fc = new JFileChooser();
-				fc.setFileFilter(new FileNameExtensionFilter("Rubber Duck Data (.rdd)", "rdd"));
+				fc.setFileFilter(new FileNameExtensionFilter("Rubber Duck Array (.rda)", "rda"));
 				fc.setCurrentDirectory(null);
 				int val = fc.showSaveDialog(null);
 				if(val == JFileChooser.APPROVE_OPTION) {
 					path = fc.getSelectedFile().toString();
-					if(!path.endsWith(".rdd"))
-						path += ".rdd";
+					if(!path.endsWith(".rda"))
+						path += ".rda";
 					
 					if(saveData(path)) message = "Data saved successfully.";
 					else message = "There was a problem saving the data.\nCheck the console for more info.";
@@ -202,7 +202,7 @@ public class ArrayDesigner extends JDialog {
 				
 				String path;
 				JFileChooser fc = new JFileChooser();
-				fc.setFileFilter(new FileNameExtensionFilter("Rubber Duck Data (.rdd)", "rdd"));
+				fc.setFileFilter(new FileNameExtensionFilter("Rubber Duck Data (.rda)", "rda"));
 				fc.setCurrentDirectory(null);
 				int val = fc.showOpenDialog(null);
 				if(val == JFileChooser.APPROVE_OPTION) {
@@ -345,7 +345,7 @@ public class ArrayDesigner extends JDialog {
 			fw.append(cbDataType.getSelectedItem().toString() + "\n");
 			for(int i=0; i<tmData.getRowCount(); i++) {
 				fw.append(tmData.getValueAt(i, 1).toString());
-				if(i < tmData.getRowCount()-1) fw.append(","); 
+				if(i < tmData.getRowCount()-1) fw.append(",");
 			}
 			
 			//return
@@ -368,8 +368,8 @@ public class ArrayDesigner extends JDialog {
 			String[] temp = fr.readLine().split(",");
 			fr.close();
 			
-			updateDataTable(temp);
 			spinnerSize.setValue(temp.length);
+			updateDataTable(temp);
 			
 			return true;
 		}
