@@ -58,7 +58,15 @@ public class MessageService {
 		if(optionsFull()) {
 			if(!this.dataMade) {
 				if(options[2].contentEquals("array")) makeArray();
-				else makeGraph(options[3].contentEquals("weighted"));
+				else {
+					try {
+						makeGraph(options[3].contentEquals("weighted"));
+					}
+					catch(Exception e) {
+						options[3] = "weighted";
+						makeGraph(true);
+					}
+				}
 			}
 			else if(options[0].contentEquals("Okay, let's make an array! ") || options[0].contentEquals("Okay, let's make a graph. ")) {
 				this.messages.add("Your data structure is already created. ");
