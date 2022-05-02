@@ -172,4 +172,30 @@ public class MyUtilities {
 		
 		return false;
 	}
+	
+	//check if the average of values is within the first half of the array
+	public static boolean exponentialPreferred(Object[] arr) {
+		//check for numerical data
+		if(arr[0] instanceof Double || arr[0] instanceof Integer) {
+			Object[] data = new Object[arr.length];
+			for(int i=0; i<arr.length; i++) {
+				data[i] = arr[i];
+			}
+			
+			if(!checkSorted(data)) {
+				SortAlgorithms.quickSort(data, 0, data.length-1);
+			}
+			
+			double avg = 0;
+			for(int i=0; i<data.length; i++) {
+				avg += Double.parseDouble(data[i].toString());
+			}
+			avg /= data.length;
+			
+			//return whether the average is less than the value at halfway
+			return avg < Double.parseDouble(arr[data.length/2].toString());
+		}
+		
+		return false;
+	}
 }

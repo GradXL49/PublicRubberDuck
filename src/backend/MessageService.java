@@ -249,6 +249,13 @@ public class MessageService {
 					if(needSort == null) export = ArraySearchExport.generateCode("exponential", className, num, needSort, data[0], target);
 					else export = ArraySearchExport.generateCode("exponential", className, num, needSort, copy[0], target);
 				}
+				else if(MyUtilities.exponentialPreferred(data[0])) {
+					this.messages.add("I would recommend an Exponential Search since the average of values in the array appears in the first half.");
+					pos = SearchAlgorithms.exponentialNumberSearch(numbers, numbers.length, target);
+					className[0] = "ExponentialNumSearch";
+					if(needSort == null) export = ArraySearchExport.generateCode("exponential", className, num, needSort, data[0], target);
+					else export = ArraySearchExport.generateCode("exponential", className, num, needSort, copy[0], target);
+				}
 				else {
 					this.messages.add("Your array isn't very big, so I recommend a Binary Search.");
 					pos = SearchAlgorithms.binaryNumberSearch(numbers, 0, numbers.length-1, target);
@@ -505,6 +512,9 @@ public class MessageService {
 				
 				if(data[0].length > 100) {
 					this.messages.add("Because your array is so large, I would recommend an Exponential Search.");
+				}
+				else if(MyUtilities.exponentialPreferred(data[0])) {
+					this.messages.add("I would recommend an Exponential Search since the average of values in the array appears in the first half.");
 				}
 				else {
 					this.messages.add("Your array isn't very big, so I would recommend a Binary Search.");

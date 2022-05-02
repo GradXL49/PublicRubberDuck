@@ -152,6 +152,7 @@ public class AgentModel {
 			lemmaTokens[i] = lemmaModel.lemmatize(tokens[i], posTags[i]);
 		}
 		
+		System.out.println("Lemmatization : " + Arrays.stream(lemmaTokens).collect(Collectors.joining(" | ")));
 		return lemmaTokens;
 	}
 	

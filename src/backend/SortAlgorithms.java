@@ -14,9 +14,9 @@ public class SortAlgorithms {
 	public static void insertionSort(Object[] arr) {
 		if(arr[0] instanceof String)
 			insertionTextSort(arr, arr.length);
-		else if(arr[0] instanceof Double)
-			insertionDoubleSort(arr, arr.length);
-		else insertionIntSort(arr, arr.length);
+		else if(arr[0] instanceof Integer)
+			insertionIntSort(arr, arr.length);
+		else insertionDoubleSort(arr, arr.length);
 	}
 	
 	private static void insertionDoubleSort(Object[] arr, int n) {
@@ -45,10 +45,10 @@ public class SortAlgorithms {
 		int j = n-2;
 		
 		while(j>=0 && (int)Double.parseDouble(arr[j].toString())>last) {
-			arr[j+1] = arr[j];
+			arr[j+1] = (int)arr[j];
 			j--;
 		}
-		arr[j+1] = last;
+		arr[j+1] = (int)last;
 	}
 	
 	private static void insertionTextSort(Object[] arr, int n) {
