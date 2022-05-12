@@ -18,8 +18,10 @@ import opennlp.tools.doccat.DocumentCategorizerME;
 import opennlp.tools.doccat.DocumentSample;
 import opennlp.tools.doccat.DocumentSampleStream;
 import opennlp.tools.doccat.FeatureGenerator;
+import opennlp.tools.doccat.DocumentCategorizerEvaluator;
 import opennlp.tools.namefind.*;
 import opennlp.tools.util.*;
+import opennlp.tools.util.eval.FMeasure;
 
 public class TrainingGround {
 	static final String MODEL_FOLDER = "C:\\Users\\Grady\\eclipse-workspace\\RubberDuck\\src\\agent\\models\\";
@@ -43,6 +45,14 @@ public class TrainingGround {
 			FileOutputStream outStream = new FileOutputStream(new File(fout));
 			nameFinderModel.serialize(outStream);
 			
+			System.out.println("\nEvaluating the model:");
+			TokenNameFinderEvaluator eval = new TokenNameFinderEvaluator(new NameFinderME(nameFinderModel));
+			in = new MarkableFileInputStreamFactory(new File(fin));
+			sampleStream = new NameSampleDataStream(new PlainTextByLineStream(in, StandardCharsets.UTF_8));
+			eval.evaluate(sampleStream);
+			FMeasure result = eval.getFMeasure();
+			System.out.println(result.toString());
+			
 			outStream.close();
 			System.out.println("Success!");
 		}
@@ -62,7 +72,7 @@ public class TrainingGround {
 			ObjectStream<DocumentSample> sampleStream = new DocumentSampleStream(lineStream);
 		 
 			TrainingParameters params = new TrainingParameters();
-			params.put(TrainingParameters.ITERATIONS_PARAM, 100); //number of training iterations
+			params.put(TrainingParameters.ITERATIONS_PARAM, 500); //number of training iterations
 			params.put(TrainingParameters.CUTOFF_PARAM, 1); //word must appear at least this many times to be considered
 			System.out.println("Training category model...");
 			DoccatFactory factory = new DoccatFactory(new FeatureGenerator[] { new BagOfWordsFeatureGenerator() });
@@ -71,6 +81,14 @@ public class TrainingGround {
 			System.out.println("Writing category model to: " + fout);
 			FileOutputStream outStream = new FileOutputStream(new File(fout));
 			catModel.serialize(outStream);
+			
+			System.out.println("\nEvaluating the model:");
+			DocumentCategorizerEvaluator eval = new DocumentCategorizerEvaluator(new DocumentCategorizerME(catModel));
+			in = new MarkableFileInputStreamFactory(new File(fin));
+			lineStream = new PlainTextByLineStream(in, StandardCharsets.UTF_8);
+			sampleStream = new DocumentSampleStream(lineStream);
+			eval.evaluate(sampleStream);
+			System.out.println("Accuracy: "+eval.getAccuracy());
 			
 			outStream.close();
 			System.out.println("Success!");
@@ -83,8 +101,8 @@ public class TrainingGround {
 	//main
 	public static void main(String args[]) {
 		System.out.println("Creating NER model:");
-		trainNER(MODEL_FOLDER+"ner-training-data.txt", MODEL_FOLDER+"ner-custom-model.bin");
+		trainNER(MODEL_FOLDER+"ner-training-data.txt", MODEL_FOLDER+"NEW_ner-custom-model.bin");
 		System.out.println("\n\nCreating category model:");
-		trainCAT(MODEL_FOLDER+"cat-training-data.txt", MODEL_FOLDER+"cat-custom-model.bin");
+		trainCAT(MODEL_FOLDER+"cat-training-data.txt", MODEL_FOLDER+"NEW_cat-custom-model.bin");
 	}
 }

@@ -12,5 +12,9 @@ project in Eclipse. In src/agent/AgentModel.java edit
 the global variable MODEL_FOLDER to reflect the path
 to src/agent/models/ on your machine. If you wish to
 train the agent on your own data, be sure to edit the
-same variable in TrainingGround.java as well. Start the
-program by running src/backend/BackendMain.java.
+same variable in TrainingGround.java as well.
+
+The original training data is in that folder as
+cat-training-data.txt and ner-training-data.txt.
+
+Start the program by running src/backend/BackendMain.java.
